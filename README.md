@@ -57,7 +57,7 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Skala:** tryck *Skala* under receptets titel för att tillfälligt ändra mängderna (½×, 1½×, 2× …, eget tal eller antal portioner). Gäller även kokläget och delning, och nollställs när du lämnar receptet.
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
-- **Ljust eller mörkt läge:** kugghjulet → *Utseende* → Som telefonen, Ljust eller Mörkt.
+- **Utseende:** kugghjulet → *Utseende*. Välj ljust, mörkt eller som telefonen, och ett av sex färgteman: Terrakotta, Olivlund, Ockra & bläck, Rost & dimblå, Plommon & havre eller Seriös (svartvitt och stramt).
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
 ### Varianter
