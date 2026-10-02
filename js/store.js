@@ -128,8 +128,8 @@ export function isInDevelopment(recipeId) {
 export function createRecipe({ title = '', chapterId = null } = {}) {
   const t = now();
   const recipe = { id: uuid(), title, chapterId, tags: [], description: '', defaultVariantId: null, createdAt: t, updatedAt: t };
-  // I Fas 1 är alla recept "klara" och direkt redigerbara. Utvecklingsläge kommer i Fas 2.
-  const variant = { id: uuid(), recipeId: recipe.id, name: 'Standard', status: 'locked', currentVersionId: null, sortOrder: 0, createdAt: t, updatedAt: t };
+  // Nya recept börjar som "under utveckling". Första gången man trycker Klar frågar appen om det ska låsas.
+  const variant = { id: uuid(), recipeId: recipe.id, name: 'Standard', status: 'development', currentVersionId: null, sortOrder: 0, createdAt: t, updatedAt: t };
   const version = {
     id: uuid(), variantId: variant.id, number: 1, ingredients: [], steps: [], servings: '',
     changeNote: '', basedOnVersionId: null, frozen: false, createdAt: t, updatedAt: t,
@@ -141,8 +141,15 @@ export function createRecipe({ title = '', chapterId = null } = {}) {
     { store: 'variants', put: variant },
     { store: 'versions', put: version },
   ]);
+  justCreated.add(recipe.id);
   return recipe;
 }
+
+/** Recept som skapats under den här körningen och ännu inte fått frågan "Är receptet färdigt?". */
+export const justCreated = new Set();
+
+/** Nya versioner som tas bort igen om man lämnar redigeringen utan att ändra något. */
+export const pendingDiscard = new Set();
 
 export function updateRecipe(id, patch) {
   const r = state.recipes.get(id);
@@ -197,4 +204,120 @@ export function restore(removed) {
   const ops = [];
   for (const [store, list] of Object.entries(removed)) for (const o of list) ops.push({ store, put: o });
   commit(ops);
+}
+
+/* ---------- Versioner, låsning och testloggar (Fas 2) ---------- */
+
+export function versionsOf(variantId) {
+  return [...state.versions.values()].filter(v => v.variantId === variantId).sort((a, b) => a.number - b.number);
+}
+
+export function testlogsOf(versionId) {
+  return [...state.testlogs.values()].filter(l => l.versionId === versionId)
+    .sort((a, b) => (b.date || '').localeCompare(a.date || '') || (b.createdAt || '').localeCompare(a.createdAt || ''));
+}
+
+export function ratingSummary(versionId) {
+  const logs = testlogsOf(versionId);
+  const rated = logs.filter(l => l.rating);
+  return { count: logs.length, avg: rated.length ? rated.reduce((s, l) => s + l.rating, 0) / rated.length : null };
+}
+
+function copyVersion(from, variantId, number, t) {
+  // Ingredienser och steg får nya id:n så att varje version är självständig.
+  return {
+    id: uuid(), variantId, number,
+    ingredients: from.ingredients.map(i => ({ ...i, id: uuid() })),
+    steps: from.steps.map(st => ({ ...st, id: uuid() })),
+    servings: from.servings || '', changeNote: '', basedOnVersionId: from.id, frozen: false,
+    createdAt: t, updatedAt: t,
+  };
+}
+
+function nextNumber(variantId) {
+  return versionsOf(variantId).reduce((m, v) => Math.max(m, v.number), 0) + 1;
+}
+
+/** Fryser aktuell version och skapar en ny redigerbar kopia. Returnerar den nya versionen. */
+export function newVersion(variantId) {
+  const variant = state.variants.get(variantId);
+  const cur = state.versions.get(variant.currentVersionId);
+  const t = now();
+  const ver = copyVersion(cur, variantId, nextNumber(variantId), t);
+  commit([
+    { store: 'versions', put: { ...cur, frozen: true, updatedAt: t } },
+    { store: 'versions', put: ver },
+    { store: 'variants', put: { ...variant, status: 'development', prevStatus: undefined, currentVersionId: ver.id, updatedAt: t } },
+  ]);
+  return ver;
+}
+
+/** Ångrar en ny version som aldrig ändrades: tar bort den och gör den förra aktuell igen. */
+export function discardVersion(versionId) {
+  const ver = state.versions.get(versionId);
+  if (!ver || !ver.basedOnVersionId) return;
+  const variant = state.variants.get(ver.variantId);
+  const prev = state.versions.get(ver.basedOnVersionId);
+  if (!variant || !prev || variant.currentVersionId !== ver.id || testlogsOf(ver.id).length) return;
+  const t = now();
+  commit([
+    { store: 'versions', del: ver.id },
+    { store: 'versions', put: { ...prev, frozen: variant.prevStatus === 'locked', updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: variant.prevStatus || 'development', prevStatus: undefined, currentVersionId: prev.id, updatedAt: t } },
+  ]);
+}
+
+/** true om versionen har samma innehåll som den den kopierades från (och ingen ändringsnotis). */
+export function isUnchangedCopy(versionId) {
+  const ver = state.versions.get(versionId);
+  const prev = ver && state.versions.get(ver.basedOnVersionId);
+  if (!prev || (ver.changeNote || '').trim()) return false;
+  const strip = list => JSON.stringify(list.map(({ id, ...rest }) => rest));
+  return strip(ver.ingredients) === strip(prev.ingredients) && strip(ver.steps) === strip(prev.steps) && (ver.servings || '') === (prev.servings || '');
+}
+
+/** Lås: status "locked" och aktuell version fryses. */
+export function lockVariant(variantId) {
+  const variant = state.variants.get(variantId);
+  const cur = state.versions.get(variant.currentVersionId);
+  const t = now();
+  commit([
+    { store: 'versions', put: { ...cur, frozen: true, updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: 'locked', prevStatus: undefined, updatedAt: t } },
+  ]);
+}
+
+/** Lås upp: status "development" och en ny redigerbar version baserad på den låsta. */
+export function unlockVariant(variantId) {
+  const variant = state.variants.get(variantId);
+  const ver = newVersion(variantId);
+  // Kom ihåg att den var låst, så att en oförändrad upplåsning kan ångras.
+  const v2 = state.variants.get(variantId);
+  commit([{ store: 'variants', put: { ...v2, prevStatus: variant.status } }]);
+  return ver;
+}
+
+/** Snabbrättning: ändrar en (ev. fryst) version utan att skapa en ny. */
+export function fixVersion(versionId, patch) {
+  return updateVersion(versionId, patch);
+}
+
+export function addTestLog(versionId, { date, rating = null, text = '' }) {
+  const t = now();
+  const log = { id: uuid(), versionId, date, rating, text, createdAt: t, updatedAt: t };
+  commit([{ store: 'testlogs', put: log }]);
+  return log;
+}
+
+export function updateTestLog(id, patch) {
+  const l = state.testlogs.get(id);
+  if (!l) return;
+  commit([{ store: 'testlogs', put: { ...l, ...patch, updatedAt: now() } }]);
+}
+
+export function deleteTestLog(id) {
+  const l = state.testlogs.get(id);
+  if (!l) return null;
+  commit([{ store: 'testlogs', del: id }]);
+  return l;
 }

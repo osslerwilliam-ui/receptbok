@@ -7,11 +7,21 @@
 // 3. Vid start körs migreringen automatiskt. Innan den körs laddas en backup ned och en kopia
 //    sparas i databasen (se app.js), så att ingen data kan gå förlorad.
 
-export const SCHEMA_VERSION = 1;
+export const SCHEMA_VERSION = 2;
 
 export const MIGRATIONS = {
-  // Exempel för framtiden:
-  // 2: (data) => { for (const r of data.recipes) r.nyttFält ??= null; return data; },
+  // Fas 2: status och frysta versioner används på riktigt.
+  // Recept från Fas 1 är "klara" (låsta): deras aktuella version fryses.
+  2: data => {
+    const locked = new Set(data.variants.filter(v => v.status !== 'development').map(v => v.currentVersionId));
+    for (const v of data.variants) if (v.status !== 'development') v.status = 'locked';
+    for (const ver of data.versions) {
+      ver.frozen = ver.frozen === true || locked.has(ver.id);
+      ver.changeNote ??= '';
+      ver.basedOnVersionId ??= null;
+    }
+    return data;
+  },
 };
 
 export function migrateData(data, fromVersion) {
