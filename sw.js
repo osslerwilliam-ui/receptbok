@@ -1,6 +1,6 @@
 // Service worker: gör att appen fungerar offline.
 // HÖJ VERSIONEN vid varje release, annars når uppdateringen inte telefonen.
-const VERSION = '1.4.0';
+const VERSION = '1.5.0';
 const CACHE = `receptbok-v${VERSION}`;
 
 const FILES = [
@@ -9,6 +9,7 @@ const FILES = [
   'manifest.webmanifest',
   'css/tokens.css',
   'css/app.css',
+  'css/themes.css',
   'js/app.js',
   'js/backup.js',
   'js/components.js',
@@ -36,6 +37,13 @@ const FILES = [
   'fonts/fraunces-latin-wght-normal.woff2',
   'fonts/fraunces-latin-wght-italic.woff2',
   'fonts/inter-latin-wght-normal.woff2',
+  'fonts/ibm-plex-serif-latin-400-normal.woff2',
+  'fonts/ibm-plex-serif-latin-600-normal.woff2',
+  'fonts/ibm-plex-serif-latin-400-italic.woff2',
+  'fonts/ibm-plex-sans-latin-400-normal.woff2',
+  'fonts/ibm-plex-sans-latin-600-normal.woff2',
+  'fonts/ibm-plex-mono-latin-400-normal.woff2',
+  'fonts/ibm-plex-mono-latin-500-normal.woff2',
   'icons/icon-192.png',
   'icons/icon-512.png',
   'icons/icon-maskable-512.png',

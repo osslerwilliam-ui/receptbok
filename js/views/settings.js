@@ -5,7 +5,7 @@ import { state, meta } from '../store.js';
 import { exportBackup, parseBackup, importBackup, buildBackup, downloadJSON, photosSize } from '../backup.js';
 import { fmtDate, isoDay } from '../format.js';
 import { back } from '../router.js';
-import { getTheme, setTheme } from '../theme.js';
+import { getTheme, setTheme, getPalette, setPalette, PALETTES } from '../theme.js';
 
 export function render(root) {
   root.innerHTML = `
@@ -20,6 +20,15 @@ export function render(root) {
         <div class="choice" role="radiogroup" aria-label="Färgläge">
           ${[['system', 'Som telefonen'], ['light', 'Ljust'], ['dark', 'Mörkt']].map(([v, l]) =>
             `<button type="button" role="radio" data-theme-choice="${v}" aria-checked="${getTheme() === v}">${l}</button>`).join('')}
+        </div>
+        <div class="theme-grid" role="radiogroup" aria-label="Färgtema">
+          ${Object.entries(PALETTES).map(([id, p]) => `
+            <button type="button" class="theme-card" role="radio" data-palette-choice="${id}" aria-checked="${getPalette() === id}">
+              <span class="theme-name">${esc(p.name)}${getPalette() === id ? icon('check') : ''}</span>
+              <span class="theme-sw">${['bg', 'title', 'accent', 'accent-soft'].map(c => `<span style="background:${p.light[c]}"></span>`).join('')}</span>
+              <span class="theme-sw">${['bg', 'title', 'accent', 'accent-soft'].map(c => `<span style="background:${p.dark[c]}"></span>`).join('')}</span>
+              <span class="theme-desc">${esc(p.desc)}</span>
+            </button>`).join('')}
         </div>
       </section>
 
@@ -97,6 +106,14 @@ export function render(root) {
   }, { once: false });
 
   root.onclick = async e => {
+    const palBtn = e.target.closest('[data-palette-choice]');
+    if (palBtn) {
+      setPalette(palBtn.dataset.paletteChoice);
+      const y = window.scrollY;
+      render(root);
+      window.scrollTo(0, y);
+      return;
+    }
     const themeBtn = e.target.closest('[data-theme-choice]');
     if (themeBtn) {
       setTheme(themeBtn.dataset.themeChoice);

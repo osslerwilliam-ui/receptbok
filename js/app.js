@@ -7,6 +7,7 @@ import { start, navigate, transition } from './router.js';
 import { snack, esc } from './ui.js';
 import { isoDay } from './format.js';
 import * as home from './views/home.js';
+import { apply as applyAppearance } from './theme.js';
 
 const views = {
   home: () => Promise.resolve(home),
@@ -79,6 +80,7 @@ async function loadData() {
 }
 
 async function boot() {
+  applyAppearance();
   navigator.storage?.persist?.().catch(() => {});
   // Service workern registreras först, så att rättade versioner kan nå telefonen även om något går fel nedan.
   registerServiceWorker();
