@@ -1,7 +1,8 @@
 // Redigera recept: uppgifter, ingredienser och steg. Sparar automatiskt.
 
 import { icon, esc, $, $$, sheet, menuSheet, snack, debounce, autoGrow } from '../ui.js';
-import { state, bundle, chaptersSorted, saveRecipeAndVersion, deleteRecipe, uuid } from '../store.js';
+import { state, bundle, chaptersSorted, saveRecipeAndVersion, deleteRecipe, uuid, justCreated, pendingDiscard, isUnchangedCopy, discardVersion, lockVariant, testlogsOf } from '../store.js';
+import { testlogsHtml } from '../recipe-parts.js';
 import { fmtAmount, parseAmount, parseIngredientLine, parseStepLines, UNITS } from '../format.js';
 import { emptyState } from '../components.js';
 import { navigate, back } from '../router.js';
@@ -32,7 +33,7 @@ function fromItems(items, kind, map) {
   return out;
 }
 
-export function render(root, [id]) {
+export function render(root, [id], _ctx, { fix = false } = {}) {
   let editTab = 'ing';
   const b = bundle(id);
   if (!b) {
@@ -40,10 +41,13 @@ export function render(root, [id]) {
     return;
   }
   const { recipe, version } = b;
-  if (version.frozen) {
-    root.innerHTML = `<div class="page">${emptyState({ title: 'Den här versionen är låst', text: 'Lås upp receptet för att ändra det.' })}</div>`;
+  if (version.frozen && !fix) {
+    root.innerHTML = `<div class="page">${emptyState({ title: 'Den här versionen är låst', text: 'Lås upp receptet eller gör en snabbrättning för att ändra det.', button: `<a class="btn btn-primary" href="#/recept/${id}" data-link>Till receptet</a>` })}</div>`;
     return;
   }
+  // Ny version: visa föregående versions tester och fråga vad som ändrats.
+  const prevVersion = !fix && version.basedOnVersionId ? state.versions.get(version.basedOnVersionId) : null;
+  const prevLogs = prevVersion ? testlogsOf(prevVersion.id) : [];
 
   const form = {
     title: recipe.title || '',
@@ -51,6 +55,7 @@ export function render(root, [id]) {
     servings: version.servings || '',
     description: recipe.description || '',
     tags: (recipe.tags || []).join(', '),
+    changeNote: version.changeNote || '',
   };
   let ings = toItems(version.ingredients, 'ing', i => ({ id: i.id, amount: i.amount, amountText: fmtAmount(i.amount), unit: i.unit || '', name: i.name || '', note: i.note || '' }));
   let steps = toItems(version.steps, 'step', s => ({ id: s.id, text: s.text || '' }));
@@ -63,6 +68,14 @@ export function render(root, [id]) {
       <button type="button" class="btn btn-primary btn-small" data-action="done">${icon('check')}Klar</button>
     </div>
     <div class="page edit">
+      ${fix ? `<p class="edit-banner">${icon('pencil')}<span><b>Snabbrättning av v${version.number}.</b> För stavfel och små ändringar – ingen ny version skapas.</span></p>` : ''}
+      ${prevVersion ? `
+        <details class="prev-logs" ${prevLogs.length ? 'open' : ''}>
+          <summary>${icon('notebook-pen')}Tester av v${prevVersion.number} (${prevLogs.length})</summary>
+          ${testlogsHtml(prevLogs, { empty: `Inga tester loggades för v${prevVersion.number}.` })}
+        </details>
+        <label class="field changenote-field"><span class="field-label">Vad ändrade du jämfört med v${prevVersion.number}?</span>
+          <textarea id="f-change" class="input" rows="2" placeholder="t.ex. Mer vatten, 10 min längre i ugnen" data-f="changeNote">${esc(form.changeNote)}</textarea></label>` : ''}
       <label class="sr-only" for="f-title">Titel</label>
       <textarea id="f-title" class="title-input" rows="1" placeholder="Receptets namn" data-f="title" enterkeyhint="next">${esc(form.title)}</textarea>
 
@@ -123,7 +136,7 @@ export function render(root, [id]) {
     const p = saveRecipeAndVersion(id,
       { title: form.title.trim(), chapterId: form.chapterId || null, description: form.description.trim(), tags },
       version.id,
-      { servings: form.servings.trim(), ingredients, steps: stepsOut });
+      { servings: form.servings.trim(), ingredients, steps: stepsOut, ...(prevVersion ? { changeNote: form.changeNote.trim() } : {}) });
     Promise.resolve(p).then(() => { if (!dirty) savedEl.innerHTML = `${icon('check')}Sparat`; });
   };
   const save = debounce(doSave, 500);
@@ -239,6 +252,18 @@ export function render(root, [id]) {
     if (a === 'back') { back(`/recept/${id}`); return; }
     if (a === 'done') {
       save.flush();
+      if (!isEmpty() && justCreated.has(id)) {
+        justCreated.delete(id);
+        const choice = await sheet({
+          title: 'Är receptet färdigt?',
+          body: '<p class="sheet-text">Lås det som klart om det redan fungerar. Annars fortsätter du utveckla det med testloggar och nya versioner.</p>',
+          actions: [
+            { label: 'Fortsätt utveckla', value: 'dev', icon: 'flask-conical' },
+            { label: 'Lås som klart', value: 'lock', kind: 'primary', icon: 'lock' },
+          ],
+        });
+        if (choice === 'lock') lockVariant(bundle(id).variant.id);
+      }
       if (isEmpty()) back();
       else if (history.state?.from === `/recept/${id}`) back();
       else navigate(`/recept/${id}`, { replace: true });
@@ -309,6 +334,14 @@ export function render(root, [id]) {
   return () => {
     document.removeEventListener('visibilitychange', onHide);
     save.flush();
+    if (pendingDiscard.has(version.id)) {
+      pendingDiscard.delete(version.id);
+      if (isUnchangedCopy(version.id)) {
+        discardVersion(version.id);
+        snack(`Inget ändrades – version ${version.number} sparades inte`);
+        return;
+      }
+    }
     if (isEmpty()) {
       deleteRecipe(id);
       snack('Det tomma receptet sparades inte');
