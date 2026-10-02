@@ -5,6 +5,7 @@ import { STORES } from './db.js';
 import { SCHEMA_VERSION, migrateData } from './migrate.js';
 import { state, snapshot, setAll } from './store.js';
 import { isoDay } from './format.js';
+import { blobToDataUrl, dataUrlToBlob } from './photos.js';
 
 export function buildBackup(data = snapshot(), schemaVersion = SCHEMA_VERSION) {
   return { app: 'receptbok', schemaVersion, exportedAt: new Date().toISOString(), data };
@@ -22,10 +23,26 @@ export function downloadJSON(obj, filename) {
   setTimeout(() => URL.revokeObjectURL(url), 10000);
 }
 
-export async function exportBackup() {
-  downloadJSON(buildBackup(), `receptbok-backup-${isoDay()}.json`);
+/** Total storlek på sparade foton i byte (för att visa hur stor backupen blir). */
+export async function photosSize() {
+  const all = await db.getAllPhotos();
+  return { count: all.length, bytes: all.reduce((s, p) => s + (p.blob?.size || 0), 0) };
+}
+
+export async function exportBackup({ photos = true, filename = null, remember = true } = {}) {
+  const backup = buildBackup();
+  backup.includesPhotos = photos;
+  if (photos) {
+    const all = await db.getAllPhotos();
+    backup.photos = [];
+    for (const p of all) {
+      const { blob, ...rest } = p;
+      backup.photos.push({ ...rest, data: await blobToDataUrl(blob) });
+    }
+  }
+  downloadJSON(backup, filename || `receptbok-backup-${isoDay()}${photos ? '' : '-utan-foton'}.json`);
   const t = new Date().toISOString();
-  await db.setMeta('lastExportAt', t);
+  if (remember) await db.setMeta('lastExportAt', t);
   return t;
 }
 
@@ -42,7 +59,8 @@ export function parseBackup(text) {
     if (!Array.isArray(list)) throw new Error('Backupfilen är skadad.');
     data[name] = list.filter(o => o && typeof o.id === 'string');
   }
-  return { data: migrateData(data, v), exportedAt: obj.exportedAt, counts: { recipes: data.recipes.length, chapters: data.chapters.length } };
+  const photos = Array.isArray(obj.photos) ? obj.photos.filter(p => p && typeof p.id === 'string' && typeof p.data === 'string') : [];
+  return { data: migrateData(data, v), photos, exportedAt: obj.exportedAt, counts: { recipes: data.recipes.length, chapters: data.chapters.length, photos: photos.length } };
 }
 
 /** mode: 'replace' ersätter allt, 'merge' lägger till nytt och behåller det nyaste av dubbletter. */
@@ -61,6 +79,14 @@ export async function importBackup(parsed, mode) {
       next[name] = [...map.values()];
     }
   }
+  // Foton först (de är stora). Vid "ersätt allt" tas gamla foton bort bara om backupen har foton.
+  const records = [];
+  for (const p of parsed.photos || []) {
+    const { data, ...rest } = p;
+    records.push({ ...rest, blob: await dataUrlToBlob(data) });
+  }
+  if (mode === 'replace' && records.length) await db.clearPhotos();
+  await db.putPhotos(records);
   await db.replaceAll(next);
   setAll(await db.readAll());
 }
