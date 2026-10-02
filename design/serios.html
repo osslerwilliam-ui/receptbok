@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receptbok seriöst tema</title>
+<style>
+/* Provsida för temat "Seriös": svartvitt, raka hörn, tunna linjer, IBM Plex Serif/Sans/Mono.
+   Tre skärmar: startsida, klart recept och recept under utveckling + versionsjämförelse. */
+@font-face { font-family: "Plex Serif"; src: url("../fonts/ibm-plex-serif-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Plex Serif"; src: url("../fonts/ibm-plex-serif-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Plex Serif"; src: url("../fonts/ibm-plex-serif-latin-400-italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Plex Sans"; src: url("../fonts/ibm-plex-sans-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Plex Sans"; src: url("../fonts/ibm-plex-sans-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Plex Mono"; src: url("../fonts/ibm-plex-mono-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Plex Mono"; src: url("../fonts/ibm-plex-mono-latin-500-normal.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+:root {
+  --bg: #ffffff; --text: #111111; --muted: #5c5c5c; --rule: #111111; --hair: #d4d4d4; --fill: #f2f2f2; --inv-bg: #111111; --inv-text: #ffffff;
+  --serif: "Plex Serif", Georgia, serif; --sans: "Plex Sans", system-ui, sans-serif; --mono: "Plex Mono", ui-monospace, monospace;
+  --page: #e6e6e6; --page-text: #111111;
+  color-scheme: light;
+}
+.stage[data-m="dark"] {
+  --bg: #0f0f0f; --text: #ececec; --muted: #9a9a9a; --rule: #ececec; --hair: #333333; --fill: #1c1c1c; --inv-bg: #ececec; --inv-text: #0f0f0f;
+  color-scheme: dark;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #1a1a1a; --page-text: #ececec; color-scheme: dark; } }
+:root[data-theme="dark"] { --page: #1a1a1a; --page-text: #ececec; color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--page-text); font: 400 16px/1.5 var(--sans); padding-inline: 16px; padding-block: 24px 48px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+.intro h1 { font: 600 1.5rem/1.2 var(--serif); margin: 0; }
+.intro p { margin: 6px 0 0; font-size: .95rem; max-width: 62ch; opacity: .8; }
+.modes { display: flex; gap: 0; border: 1px solid currentColor; width: max-content; }
+.modes button { border: 0; background: none; min-height: 40px; padding: 0 18px; font: 500 .8rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
+.modes button[aria-pressed="true"] { background: var(--page-text); color: var(--page); }
+
+.stage { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+.phone { width: 100%; max-width: 360px; background: var(--bg); color: var(--text); border: 1px solid var(--hair); padding: 18px 18px 22px; display: grid; gap: 16px; align-content: start; transition: background .2s, color .2s; }
+.icon { width: 20px; height: 20px; display: block; flex: none; }
+.cap { font: 500 .7rem/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--muted); }
+
+/* Startsida */
+.masthead { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 2px solid var(--rule); padding-bottom: 8px; }
+.wordmark { font: 600 1.55rem/1 var(--serif); letter-spacing: -.01em; }
+.wordmark small { display: block; font: 400 .65rem/1 var(--mono); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+.search { display: flex; align-items: center; gap: 10px; min-height: 48px; padding: 0 12px; border: 1px solid var(--rule); font-size: .95rem; color: var(--muted); }
+.sec { display: grid; gap: 0; }
+.sec .cap { padding-bottom: 6px; border-bottom: 1px solid var(--rule); }
+.line { display: grid; grid-template-columns: 1.6em 1fr auto; gap: 10px; align-items: baseline; padding: 11px 0; border-bottom: 1px solid var(--hair); }
+.line .e { filter: grayscale(1); font-size: .95rem; }
+.line b { font: 400 1.02rem/1.25 var(--serif); }
+.line .n { font: 400 .8rem var(--mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.line.rec { grid-template-columns: 1fr auto; }
+.line.rec small { display: block; font: 400 .72rem/1.3 var(--mono); color: var(--muted); letter-spacing: .02em; margin-top: 2px; }
+.line .chev { width: 16px; height: 16px; color: var(--muted); }
+.addrow { font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; padding: 12px 0; }
+
+/* Recept */
+.bar { display: flex; justify-content: space-between; }
+.bar span { display: flex; gap: 16px; }
+.fav { fill: currentColor; }
+.ref { font: 400 .7rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+.r-title { font: 600 1.7rem/1.12 var(--serif); margin: 4px 0 0; letter-spacing: -.01em; }
+.rule2 { border: 0; border-top: 2px solid var(--rule); margin: 0; }
+.variants { display: flex; gap: 18px; font: 400 .9rem var(--sans); }
+.variants span { padding-bottom: 4px; color: var(--muted); }
+.variants span.on { color: var(--text); font-weight: 600; border-bottom: 2px solid var(--rule); }
+.meta { display: flex; gap: 14px; font: 400 .75rem var(--mono); text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+.meta .sc { color: var(--text); border: 1px solid var(--rule); padding: 1px 6px; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--rule); font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; text-align: center; }
+.tabs span { padding: 11px 4px; }
+.tabs span.on { background: var(--inv-bg); color: var(--inv-text); }
+.grp { font: 400 .72rem var(--mono); letter-spacing: .14em; text-transform: uppercase; margin: 4px 0 0; padding-bottom: 4px; border-bottom: 1px solid var(--rule); }
+table { width: 100%; border-collapse: collapse; }
+td { padding: 8px 0; border-bottom: 1px solid var(--hair); vertical-align: baseline; }
+td.a { width: 3.4em; text-align: right; font: 500 .95rem var(--mono); font-variant-numeric: tabular-nums; padding-right: 6px; }
+td.u { width: 2.4em; font: 400 .85rem var(--mono); color: var(--muted); }
+td.nm { font: 400 1rem var(--serif); }
+td.nm i { font-size: .85rem; color: var(--muted); }
+tr.done td { color: var(--muted); }
+tr.done td.nm { text-decoration: line-through; }
+.steps { display: grid; gap: 10px; margin: 0; padding: 0; list-style: none; }
+.steps li { display: grid; grid-template-columns: 1.8em 1fr; gap: 8px; font: 400 .95rem/1.45 var(--serif); }
+.steps li b { font: 500 .85rem/1.7 var(--mono); }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn { min-height: 46px; display: flex; align-items: center; justify-content: center; gap: 8px; font: 500 .75rem var(--mono); letter-spacing: .1em; text-transform: uppercase; border: 1px solid var(--rule); }
+.btn.p { background: var(--inv-bg); color: var(--inv-text); }
+.btn .icon { width: 16px; height: 16px; }
+
+/* Under utveckling: streckad ram i stället för färg */
+.draft { border: 1px dashed var(--rule); padding: 3px 8px; font: 500 .68rem var(--mono); letter-spacing: .12em; text-transform: uppercase; width: max-content; }
+.phone.dev { background-image: repeating-linear-gradient(var(--bg) 0 27px, var(--hair) 27px 28px); }
+.note { border-left: 2px solid var(--rule); padding: 2px 0 2px 10px; font: 400 .9rem/1.45 var(--serif); }
+.note .cap { display: block; margin-bottom: 4px; }
+.fn { display: grid; grid-template-columns: 1.8em 1fr; gap: 6px; font: 400 .85rem/1.45 var(--serif); padding: 8px 0; border-top: 1px solid var(--hair); }
+.fn b { font: 500 .75rem/1.9 var(--mono); }
+.fn .d { font: 400 .72rem var(--mono); color: var(--muted); letter-spacing: .04em; }
+.diff { font: 400 .9rem/1.4 var(--mono); }
+.diff div { display: grid; grid-template-columns: 1.4em 1fr; padding: 5px 0; border-bottom: 1px solid var(--hair); }
+.diff .m { font-weight: 500; }
+.diff .rem { color: var(--muted); text-decoration: line-through; }
+.diff .chg i { font-style: normal; color: var(--muted); }
+.legend { font: 400 .7rem var(--mono); color: var(--muted); letter-spacing: .04em; }
+
+.foot { font-size: .9rem; opacity: .8; max-width: 70ch; }
+.foot ul { margin: 6px 0 0; padding-left: 1.2em; }
+@media (max-width: 420px) { body { padding-inline: 10px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="intro">
+    <h1>Receptbok – temat ”Seriös”</h1>
+    <p>Svartvitt som en avhandling: raka hörn, tunna linjer, inga färgytor. Rubriker i IBM Plex Serif, text i Plex Sans och mängder, etiketter och knappar i Plex Mono.</p>
+  </header>
+  <div class="modes" role="group" aria-label="Ljust eller mörkt">
+    <button type="button" data-mode="light" aria-pressed="true">Ljust</button>
+    <button type="button" data-mode="dark" aria-pressed="false">Mörkt</button>
+  </div>
+
+  <section class="stage" id="stage" data-m="light">
+    <!-- Startsida -->
+    <div class="phone" aria-label="Startsida">
+      <div class="masthead">
+        <div class="wordmark">Receptbok<small>Samling · 64 recept</small></div>
+        <span data-i="settings"></span>
+      </div>
+      <div class="search"><span data-i="search"></span>Sök recept, ingrediens …</div>
+      <div class="sec">
+        <span class="cap">Kapitel</span>
+        <div class="line"><span class="e">🍞</span><b>Bröd</b><span class="n">12</span></div>
+        <div class="line"><span class="e">🥘</span><b>Vardagsmat</b><span class="n">34</span></div>
+        <div class="line"><span class="e">🥐</span><b>Bakverk</b><span class="n">18</span></div>
+        <div class="addrow">+ Nytt kapitel</div>
+      </div>
+      <div class="sec">
+        <span class="cap">Favoriter</span>
+        <div class="line rec"><span><b>Kardemummabullar</b><small>Bakverk</small></span><span data-i="chevron-right" data-c="chev"></span></div>
+      </div>
+      <div class="sec">
+        <span class="cap">Senast visade</span>
+        <div class="line rec"><span><b>Linsgryta med kokos</b><small>Vardagsmat · i går</small></span><span data-i="chevron-right" data-c="chev"></span></div>
+      </div>
+    </div>
+
+    <!-- Klart recept -->
+    <div class="phone" aria-label="Receptvy">
+      <div class="bar"><span data-i="chevron-left"></span><span><span data-i="heart" data-c="fav"></span><span data-i="share-2"></span><span data-i="ellipsis-vertical"></span></span></div>
+      <div>
+        <span class="ref">Bröd · Standard v3</span>
+        <h2 class="r-title">Surdegsbröd</h2>
+      </div>
+      <hr class="rule2">
+      <div class="variants"><span class="on">Standard</span><span>Med frön</span><span>Stor form</span></div>
+      <div class="meta"><span>3 bröd</span><span class="sc">Skalat ×1,5</span></div>
+      <div class="tabs"><span class="on">Ingredienser</span><span>Instruktioner</span></div>
+      <div>
+        <p class="grp">Deg</p>
+        <table>
+          <tr class="done"><td class="a">675</td><td class="u">g</td><td class="nm">vetemjöl</td></tr>
+          <tr><td class="a">75</td><td class="u">g</td><td class="nm">fullkornsråg</td></tr>
+          <tr><td class="a">570</td><td class="u">g</td><td class="nm">vatten <i>ljummet</i></td></tr>
+          <tr><td class="a">150</td><td class="u">g</td><td class="nm">surdeg <i>aktiv</i></td></tr>
+          <tr><td class="a">15</td><td class="u">g</td><td class="nm">salt</td></tr>
+        </table>
+      </div>
+      <ol class="steps"><li><b>01</b><span>Blanda mjöl och vatten, autolys 1 h.</span></li></ol>
+      <div class="btns"><span class="btn p"><span data-i="chef-hat"></span>Kokläge</span><span class="btn">Dela</span></div>
+    </div>
+
+    <!-- Under utveckling + jämförelse -->
+    <div class="phone dev" aria-label="Recept under utveckling">
+      <div class="bar"><span data-i="chevron-left"></span><span><span data-i="heart"></span><span data-i="share-2"></span><span data-i="ellipsis-vertical"></span></span></div>
+      <div>
+        <span class="draft">Under utveckling · v4</span>
+        <h2 class="r-title">Rabarberpaj</h2>
+      </div>
+      <div class="note"><span class="cap">Ändrat i v4</span>Mindre socker, mer havre i smuldegen.</div>
+      <div>
+        <span class="cap">Tester av v4</span>
+        <div class="fn"><b>[1]</b><span><span class="d">2026-09-28 · ★★★★☆</span><br>Bättre balans. Skorpan kunde vara krispigare.</span></div>
+        <div class="fn"><b>[2]</b><span><span class="d">2026-09-21 · ★★★☆☆</span><br>För sött, rabarbern drunknade.</span></div>
+      </div>
+      <div>
+        <span class="cap">Jämförelse v3 → v4</span>
+        <div class="diff">
+          <div class="chg"><span class="m">~</span><span>socker 2 dl <i>→ 1½ dl</i></span></div>
+          <div class="add"><span class="m">+</span><span>havregryn 1 dl</span></div>
+          <div class="rem"><span class="m">−</span><span>vaniljsocker 1 tsk</span></div>
+          <div><span class="m"> </span><span>rabarber 500 g</span></div>
+        </div>
+        <p class="legend">+ tillagd · − borttagen · ~ ändrad</p>
+      </div>
+      <div class="btns"><span class="btn p"><span data-i="notebook-pen"></span>Logga test</span><span class="btn">Ny version</span></div>
+    </div>
+  </section>
+
+  <section class="foot">
+    <b>Så skiljer sig temat från de andra:</b>
+    <ul>
+      <li>Inga färgytor eller rundade kort – listor och tabeller med linjer, som i ett tryckt dokument.</li>
+      <li>”Under utveckling” visas med streckad ram och linjerat papper i stället för gul ton.</li>
+      <li>Versionsjämförelsen använder tecknen + − ~ och genomstrykning i stället för grönt/rött/gult.</li>
+      <li>Kapitlens emojis visas i gråskala och kapitelfärgerna används inte.</li>
+    </ul>
+  </section>
+</div>
+
+<script type="module">
+import { icon } from "../js/icons.js";
+document.querySelectorAll("[data-i]").forEach(el => el.outerHTML = icon(el.dataset.i, el.dataset.c || ""));
+const stage = document.getElementById("stage");
+const set = m => { stage.dataset.m = m; document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m)); };
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => set(b.dataset.mode)));
+if (matchMedia("(prefers-color-scheme: dark)").matches) set("dark");
+</script>
+</body>
+</html>
