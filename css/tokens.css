@@ -1,0 +1,145 @@
+/* Design tokens för Receptbok.
+   Ändra färger, typsnitt, avstånd och radier här – allt annat utgår från dessa. */
+
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-latin-wght-normal.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fraunces";
+  src: url("../fonts/fraunces-latin-wght-italic.woff2") format("woff2");
+  font-weight: 300 800;
+  font-style: italic;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Inter";
+  src: url("../fonts/inter-latin-wght-normal.woff2") format("woff2");
+  font-weight: 400 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Färger – ljust läge: papper, varm mörk text, terrakotta */
+  --bg: #f5efe4;
+  --surface: #fdf9f2;
+  --surface-2: #ece3d4;
+  --text: #2f2621;
+  --text-muted: #75675a;
+  --line: #e2d6c4;
+  --accent: #b0502c;
+  --accent-strong: #933f20;
+  --accent-ink: #fffaf4;
+  --accent-soft: #f4ddd0;
+  --success: #5e7a3a;
+  --snack-action: #f0a07f;
+  --danger: #a8322a;
+  --shadow: 0 1px 2px rgb(70 45 25 / .06), 0 4px 14px rgb(70 45 25 / .06);
+
+  /* "Under utveckling": anteckningsblock */
+  --dev-bg: #fbf5df;
+  --dev-line: #ece0b4;
+  --dev-ink: #7d6111;
+  --dev-soft: #f3e7bd;
+
+  /* Kapitelfärger */
+  --ch-terrakotta: #b0502c;
+  --ch-oliv: #6b7a37;
+  --ch-senap: #b08417;
+  --ch-plommon: #84466a;
+  --ch-skog: #3f6b5a;
+  --ch-lera: #8a6248;
+
+  /* Typografi */
+  --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fs-xs: .8125rem;
+  --fs-sm: .9375rem;
+  --fs-base: 1.0625rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.375rem;
+  --fs-2xl: clamp(1.5rem, 1rem + 2.6vw, 1.875rem);
+  --fs-cook: 1.3125rem;
+  --lh: 1.5;
+
+  /* Avstånd och former */
+  --sp-1: 4px;
+  --sp-2: 8px;
+  --sp-3: 12px;
+  --sp-4: 16px;
+  --sp-5: 24px;
+  --sp-6: 32px;
+  --sp-7: 48px;
+  --radius-sm: 10px;
+  --radius: 16px;
+  --radius-lg: 22px;
+  --tap: 44px;
+  --dur: 180ms;
+
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1c1714;
+    --surface: #26201b;
+    --surface-2: #322a23;
+    --text: #f0e6d9;
+    --text-muted: #a99a8a;
+    --line: #3b3129;
+    --accent: #e27e57;
+    --accent-strong: #f0956f;
+    --accent-ink: #1c1714;
+    --accent-soft: #48291c;
+    --success: #9db86b;
+    --snack-action: #a8441f;
+    --danger: #f08b7c;
+    --shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px rgb(0 0 0 / .2);
+    --dev-bg: #29231a;
+    --dev-line: #3a311f;
+    --dev-ink: #dcb75a;
+    --dev-soft: #3d3220;
+    --ch-terrakotta: #e27e57;
+    --ch-oliv: #a8b86a;
+    --ch-senap: #dcb75a;
+    --ch-plommon: #c98bb0;
+    --ch-skog: #7fb39d;
+    --ch-lera: #c49a7e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1c1714;
+  --surface: #26201b;
+  --surface-2: #322a23;
+  --text: #f0e6d9;
+  --text-muted: #a99a8a;
+  --line: #3b3129;
+  --accent: #e27e57;
+  --accent-strong: #f0956f;
+  --accent-ink: #1c1714;
+  --accent-soft: #48291c;
+  --success: #9db86b;
+  --snack-action: #a8441f;
+  --danger: #f08b7c;
+  --shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px rgb(0 0 0 / .2);
+  --dev-bg: #29231a;
+  --dev-line: #3a311f;
+  --dev-ink: #dcb75a;
+  --dev-soft: #3d3220;
+  --ch-terrakotta: #e27e57;
+  --ch-oliv: #a8b86a;
+  --ch-senap: #dcb75a;
+  --ch-plommon: #c98bb0;
+  --ch-skog: #7fb39d;
+  --ch-lera: #c49a7e;
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root { --dur: 0ms; }
+}

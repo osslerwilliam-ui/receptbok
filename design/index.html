@@ -1,0 +1,511 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receptbok designförslag</title>
+<link rel="stylesheet" href="../css/tokens.css">
+<style>
+/* Designförslag: tre skärmar (startsida, receptvy, kokläge) sida vid sida på dator, under varandra i mobilen. */
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--surface-2);
+  color: var(--text);
+  font: 400 var(--fs-base)/var(--lh) var(--font-sans);
+  padding-inline: 16px;
+  padding-block: var(--sp-5) var(--sp-7);
+}
+button { font: inherit; color: inherit; }
+.icon { width: 1.25em; height: 1.25em; flex: none; display: block; }
+
+/* ---------- Ramen runt förslaget ---------- */
+.intro { max-width: 1240px; margin: 0 auto var(--sp-5); display: grid; gap: var(--sp-3); }
+.intro h1 { font: 600 var(--fs-xl)/1.15 var(--font-serif); margin: 0; text-wrap: balance; }
+.intro p { margin: 0; color: var(--text-muted); max-width: 62ch; font-size: var(--fs-sm); }
+.theme-switch { display: inline-flex; background: var(--surface); border-radius: 999px; padding: 4px; gap: 2px; box-shadow: var(--shadow); width: max-content; max-width: 100%; }
+.theme-switch button { border: 0; background: none; min-height: 36px; padding: 0 var(--sp-4); border-radius: 999px; cursor: pointer; font-size: var(--fs-sm); color: var(--text-muted); }
+.theme-switch button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+
+.screens { max-width: 1240px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: var(--sp-6); justify-content: center; align-items: flex-start; }
+.screen-col { width: 100%; max-width: 390px; display: grid; gap: var(--sp-3); min-width: 0; }
+.screen-label { font-size: var(--fs-xs); text-transform: uppercase; letter-spacing: .08em; color: var(--text-muted); font-weight: 600; display: flex; justify-content: space-between; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.phone {
+  background: var(--bg);
+  border-radius: 28px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / .08), 0 18px 40px rgb(60 35 20 / .12);
+  overflow: hidden;
+  position: relative;
+  min-height: 720px;
+}
+.mini-toggle { display: inline-flex; gap: 2px; background: var(--surface); border-radius: 999px; padding: 3px; text-transform: none; letter-spacing: 0; }
+.mini-toggle button { border: 0; background: none; padding: 4px 10px; border-radius: 999px; font-size: var(--fs-xs); color: var(--text-muted); cursor: pointer; min-height: 30px; }
+.mini-toggle button[aria-pressed="true"] { background: var(--text); color: var(--bg); }
+
+/* ---------- Gemensamma komponenter i appen ---------- */
+.appbar { display: flex; align-items: center; gap: var(--sp-1); padding: var(--sp-3) var(--sp-3) 0; min-height: 56px; }
+.appbar .spacer { flex: 1; }
+.icon-btn { width: var(--tap); height: var(--tap); border-radius: 999px; border: 0; background: none; display: grid; place-items: center; cursor: pointer; color: var(--text); transition: background var(--dur); }
+.icon-btn:active { background: var(--surface-2); }
+.icon-btn .icon { width: 22px; height: 22px; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.section-title { font: 600 var(--fs-xs)/1 var(--font-sans); text-transform: uppercase; letter-spacing: .09em; color: var(--text-muted); margin: 0 0 var(--sp-3); }
+
+/* ---------- Startsida ---------- */
+.home { padding: 0 var(--sp-4) 96px; }
+.home-head { display: flex; align-items: center; justify-content: space-between; padding: var(--sp-4) 0 var(--sp-3); }
+.wordmark { font: 600 var(--fs-2xl)/1 var(--font-serif); letter-spacing: -.01em; margin: 0; font-variation-settings: "SOFT" 50; }
+.wordmark em { color: var(--accent); font-style: italic; font-weight: 500; }
+.search { display: block; position: relative; margin-bottom: var(--sp-5); }
+.search .icon { position: absolute; left: 16px; top: 50%; translate: 0 -50%; color: var(--text-muted); width: 20px; height: 20px; pointer-events: none; }
+.search input {
+  width: 100%; min-height: 54px; border-radius: var(--radius); border: 1.5px solid transparent;
+  background: var(--surface); box-shadow: var(--shadow); padding: 0 var(--sp-4) 0 48px;
+  font: 400 var(--fs-base) var(--font-sans); color: var(--text); outline: none; transition: border-color var(--dur);
+}
+.search input::placeholder { color: var(--text-muted); }
+.search input:focus { border-color: var(--accent); }
+
+.chapters { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); margin-bottom: var(--sp-6); }
+.chapter {
+  --c: var(--ch-terrakotta);
+  position: relative; text-align: left; border: 0; cursor: pointer;
+  background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: var(--sp-4); min-height: 104px; display: grid; align-content: space-between; gap: var(--sp-3);
+  overflow: hidden; transition: transform var(--dur);
+}
+.chapter:active { transform: scale(.98); }
+.chapter::after { content: ""; position: absolute; inset: auto -20px -34px auto; width: 92px; height: 92px; border-radius: 50%; background: var(--c); opacity: .13; }
+.chapter .emoji { font-size: 1.6rem; line-height: 1; }
+.chapter .name { font: 600 var(--fs-lg)/1.15 var(--font-serif); display: block; }
+.chapter .count { font-size: var(--fs-xs); color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.chapter.add { background: none; box-shadow: none; border: 1.5px dashed var(--line); color: var(--text-muted); align-content: center; justify-items: center; font-size: var(--fs-sm); }
+.chapter.add::after { display: none; }
+
+.rlist { display: grid; gap: var(--sp-2); margin-bottom: var(--sp-6); }
+.rrow {
+  --c: var(--ch-terrakotta);
+  display: flex; align-items: center; gap: var(--sp-3); text-align: left; border: 0; width: 100%; cursor: pointer;
+  background: var(--surface); border-radius: var(--radius-sm); padding: var(--sp-3) var(--sp-4); min-height: 60px;
+  transition: background var(--dur);
+}
+.rrow:active { background: var(--surface-2); }
+.rrow .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
+.rrow .txt { min-width: 0; flex: 1; display: grid; gap: 2px; }
+.rrow .t { font: 600 var(--fs-base)/1.25 var(--font-serif); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rrow .t mark { background: var(--accent-soft); color: inherit; border-radius: 3px; padding: 0 1px; }
+.rrow .sub { font-size: var(--fs-xs); color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rrow .sub b { font-weight: 600; color: var(--text); }
+.rrow .chev { color: var(--text-muted); width: 18px; height: 18px; }
+.rrow.dev { background: var(--dev-bg); }
+
+.badge { display: inline-flex; align-items: center; gap: 4px; font: 600 11px/1 var(--font-sans); letter-spacing: .04em; text-transform: uppercase; color: var(--dev-ink); background: var(--dev-soft); border-radius: 999px; padding: 5px 8px; white-space: nowrap; }
+.badge .icon { width: 12px; height: 12px; }
+
+.empty { text-align: center; padding: var(--sp-6) var(--sp-4); display: grid; gap: var(--sp-3); justify-items: center; }
+.empty .big { font: 500 italic var(--fs-xl)/1.2 var(--font-serif); color: var(--text); }
+.empty p { margin: 0; color: var(--text-muted); font-size: var(--fs-sm); max-width: 30ch; }
+
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2); min-height: var(--tap); padding: 0 var(--sp-5); border-radius: 999px; border: 0; cursor: pointer; font-weight: 600; font-size: var(--fs-sm); transition: transform var(--dur), background var(--dur); }
+.btn:active { transform: scale(.97); }
+.btn-primary { background: var(--accent); color: var(--accent-ink); }
+.btn-quiet { background: var(--surface-2); color: var(--text); }
+.btn .icon { width: 18px; height: 18px; }
+
+.fab { position: absolute; right: var(--sp-4); bottom: var(--sp-4); box-shadow: 0 6px 18px rgb(120 50 20 / .28); min-height: 54px; padding: 0 var(--sp-5) 0 var(--sp-4); }
+
+/* ---------- Receptvy ---------- */
+.recipe { padding-bottom: var(--sp-6); min-height: 720px; transition: background var(--dur); }
+.recipe.is-dev { background: var(--dev-bg); }
+.recipe-head { padding: var(--sp-2) var(--sp-5) var(--sp-4); display: grid; gap: var(--sp-2); }
+.kicker { --c: var(--ch-plommon); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--c); display: flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap; }
+.recipe-title { font: 600 var(--fs-2xl)/1.08 var(--font-serif); margin: 0; letter-spacing: -.015em; text-wrap: balance; font-variation-settings: "SOFT" 30, "opsz" 72; }
+.meta { color: var(--text-muted); font-size: var(--fs-sm); display: flex; gap: var(--sp-4); flex-wrap: wrap; }
+.meta span { display: inline-flex; align-items: center; gap: 6px; }
+.meta .icon { width: 16px; height: 16px; }
+.desc { margin: var(--sp-1) 0 0; font: 400 italic var(--fs-base)/1.45 var(--font-serif); color: var(--text-muted); }
+
+.devnote { margin: 0 var(--sp-5) var(--sp-4); padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm); background: var(--dev-soft); color: var(--text); font-size: var(--fs-sm); display: grid; gap: 4px; }
+.devnote .h { display: flex; justify-content: space-between; gap: var(--sp-2); font-size: var(--fs-xs); color: var(--dev-ink); font-weight: 600; letter-spacing: .03em; }
+.stars { letter-spacing: 1px; color: var(--dev-ink); }
+
+.seg { margin: 0 var(--sp-5) var(--sp-5); display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border-radius: 999px; padding: 4px; position: relative; }
+.is-dev .seg { background: var(--dev-line); }
+.seg button { border: 0; background: none; min-height: 40px; border-radius: 999px; cursor: pointer; font-weight: 600; font-size: var(--fs-sm); color: var(--text-muted); position: relative; z-index: 1; transition: color var(--dur); }
+.seg button[aria-selected="true"] { color: var(--text); }
+.seg .pill { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); border-radius: 999px; background: var(--surface); box-shadow: var(--shadow); transition: translate var(--dur) ease; }
+.seg[data-tab="steps"] .pill { translate: 100% 0; }
+
+.panel { padding: 0 var(--sp-5); }
+.group-name { font: 600 italic var(--fs-lg)/1.2 var(--font-serif); margin: var(--sp-5) 0 var(--sp-2); color: var(--text); }
+.group-name:first-child { margin-top: 0; }
+.ing { list-style: none; margin: 0; padding: 0; }
+.ing li {
+  display: grid; grid-template-columns: 3.4em 2.6em 1fr; column-gap: var(--sp-2); align-items: baseline;
+  min-height: var(--tap); padding: 10px 0; border-bottom: 1px solid var(--line); cursor: pointer;
+  transition: opacity var(--dur);
+}
+.is-dev .ing li { border-bottom-color: var(--dev-line); }
+.ing li:last-child { border-bottom: 0; }
+.ing .amt { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; font-size: 1.05em; }
+.ing .unit { color: var(--text-muted); font-size: .92em; }
+.ing .name { min-width: 0; }
+.ing .note { color: var(--text-muted); font-size: .88em; }
+.ing li.done { opacity: .38; }
+.ing li.done .name { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+
+.steps { list-style: none; margin: 0; padding: 0; counter-reset: s; display: grid; gap: var(--sp-2); }
+.steps li { counter-increment: s; display: grid; grid-template-columns: 2.2em 1fr; gap: var(--sp-3); padding: var(--sp-3) 0; cursor: pointer; transition: opacity var(--dur); }
+.steps li::before { content: counter(s); font: 600 var(--fs-lg)/1.3 var(--font-serif); color: var(--accent); text-align: right; font-variant-numeric: tabular-nums; }
+.steps li.done { opacity: .38; }
+.steps li.done::before { content: "✓"; }
+
+.recipe-actions { display: flex; gap: var(--sp-3); padding: var(--sp-5) var(--sp-5) 0; flex-wrap: wrap; }
+.recipe-actions .btn { flex: 1; min-width: 140px; }
+
+.testlogs { margin: var(--sp-5) var(--sp-5) 0; padding-top: var(--sp-4); border-top: 1px dashed var(--dev-line); display: grid; gap: var(--sp-3); }
+.log { font-size: var(--fs-sm); display: grid; gap: 2px; }
+.log .h { display: flex; justify-content: space-between; color: var(--text-muted); font-size: var(--fs-xs); }
+
+/* ---------- Kokläge ---------- */
+.cook { min-height: 720px; padding-bottom: var(--sp-6); font-size: var(--fs-cook); }
+.awake { margin: var(--sp-2) var(--sp-4) 0; display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: 999px; background: var(--accent-soft); color: var(--accent-strong); font: 600 var(--fs-xs)/1.2 var(--font-sans); }
+.awake .icon { width: 16px; height: 16px; }
+.awake .pulse { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); margin-left: auto; animation: pulse 2.4s ease-in-out infinite; }
+@keyframes pulse { 50% { opacity: .25; } }
+@media (prefers-reduced-motion: reduce) { .awake .pulse { animation: none; } }
+.cook .recipe-head { padding-top: var(--sp-4); }
+.cook .recipe-title { font-size: 2rem; }
+.cook .seg button { min-height: 48px; font-size: 1rem; }
+.cook .panel { font-size: var(--fs-cook); }
+.cook .ing li { grid-template-columns: 3.2em 2.2em 1fr; min-height: 60px; padding: 14px 0; line-height: 1.3; }
+.cook .steps li { font-size: 1.3rem; line-height: 1.45; grid-template-columns: 1.7em 1fr; padding: var(--sp-4) 0; border-bottom: 1px solid var(--line); }
+.cook .steps li::before { font-size: 1.6rem; line-height: 1.15; }
+.cook .steps li.current { background: var(--surface); margin-inline: calc(var(--sp-3) * -1); padding-inline: var(--sp-3); border-radius: var(--radius-sm); border-bottom-color: transparent; box-shadow: var(--shadow); }
+.exit-cook { margin: var(--sp-5) var(--sp-5) 0; width: calc(100% - 2 * var(--sp-5)); }
+
+/* ---------- Snackbar ---------- */
+.snack { position: absolute; left: var(--sp-4); right: var(--sp-4); bottom: 84px; background: var(--text); color: var(--bg); border-radius: var(--radius-sm); padding: var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-4); display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); font-size: var(--fs-sm); box-shadow: 0 8px 24px rgb(0 0 0 / .2); }
+.snack button { border: 0; background: none; color: var(--snack-action); font-weight: 700; min-height: 40px; padding: 0 var(--sp-3); cursor: pointer; }
+
+.legend { max-width: 1240px; margin: var(--sp-6) auto 0; display: grid; gap: var(--sp-2); font-size: var(--fs-sm); color: var(--text-muted); }
+.legend h2 { font: 600 var(--fs-lg)/1.2 var(--font-serif); color: var(--text); margin: 0; }
+.legend ul { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; max-width: 70ch; }
+
+@media (max-width: 440px) {
+  body { padding-inline: 0; }
+  .intro, .legend { padding-inline: 16px; }
+  .screen-label { padding-inline: 16px; }
+  .phone { border-radius: 0; box-shadow: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="intro">
+  <h1>Receptbok – designförslag</h1>
+  <p>Startsida, receptvy och kokläge med påhittade exempelrecept. Allt går att trycka på: sök, byt flik och bocka av. Växla mellan ljust och mörkt läge här:</p>
+  <div class="theme-switch" role="group" aria-label="Färgläge">
+    <button type="button" data-theme-set="system" aria-pressed="true">Som telefonen</button>
+    <button type="button" data-theme-set="light" aria-pressed="false">Ljust</button>
+    <button type="button" data-theme-set="dark" aria-pressed="false">Mörkt</button>
+  </div>
+</header>
+
+<main class="screens">
+
+  <!-- ========== 1. Startsida ========== -->
+  <section class="screen-col" aria-label="Startsida">
+    <div class="screen-label"><span>1 · Startsida</span></div>
+    <div class="phone">
+      <div class="home">
+        <div class="home-head">
+          <h2 class="wordmark">Recept<em>bok</em></h2>
+          <button class="icon-btn" aria-label="Inställningar" data-i="settings"></button>
+        </div>
+        <label class="search">
+          <span data-i="search"></span>
+          <input id="demo-search" type="search" placeholder="Sök recept, ingrediens, kapitel…" autocomplete="off" aria-label="Sök">
+        </label>
+
+        <div id="home-browse">
+          <h3 class="section-title">Kapitel</h3>
+          <div class="chapters" id="chapters"></div>
+
+          <h3 class="section-title">Senast visade</h3>
+          <div class="rlist" id="recent"></div>
+
+          <h3 class="section-title">Under utveckling</h3>
+          <div class="rlist" id="devlist"></div>
+        </div>
+
+        <div id="home-results" hidden>
+          <h3 class="section-title" id="hits-title"></h3>
+          <div class="rlist" id="hits"></div>
+          <div class="empty" id="no-hits" hidden>
+            <div class="big">Inget recept hittades</div>
+            <p>Prova ett kortare ord, eller sök på en ingrediens du vet finns i receptet.</p>
+            <button class="btn btn-primary" type="button"><span data-i="plus"></span>Skapa nytt recept</button>
+          </div>
+        </div>
+      </div>
+      <div class="snack" id="snack" role="status">
+        <span>Receptet togs bort</span><button type="button">Ångra</button>
+      </div>
+      <button class="btn btn-primary fab" type="button"><span data-i="plus"></span>Nytt recept</button>
+    </div>
+  </section>
+
+  <!-- ========== 2. Receptvy ========== -->
+  <section class="screen-col" aria-label="Receptvy">
+    <div class="screen-label">
+      <span>2 · Receptvy</span>
+      <span class="mini-toggle" role="group" aria-label="Visa recept som">
+        <button type="button" data-status="locked" aria-pressed="true">Klart</button>
+        <button type="button" data-status="dev" aria-pressed="false">Under utveckling</button>
+      </span>
+    </div>
+    <div class="phone">
+      <article class="recipe" id="recipe"></article>
+    </div>
+  </section>
+
+  <!-- ========== 3. Kokläge ========== -->
+  <section class="screen-col" aria-label="Kokläge">
+    <div class="screen-label"><span>3 · Kokläge</span></div>
+    <div class="phone">
+      <article class="recipe cook" id="cook"></article>
+    </div>
+  </section>
+
+</main>
+
+<section class="legend">
+  <h2>Det här ska du titta på</h2>
+  <ul>
+    <li><b>Färger:</b> papperston, varm mörk text och terrakotta. Mörkt läge är varmt brunsvart, inte blågrått.</li>
+    <li><b>Typsnitt:</b> Fraunces för rubriker, Inter för text. Båda ligger i appen och fungerar utan nät.</li>
+    <li><b>Ingredienser:</b> mängd och enhet står i egna kolumner till vänster så att de är lätta att läsa på avstånd.</li>
+    <li><b>Under utveckling:</b> receptet får en gulaktig anteckningsblockston och ett märke. Testloggar syns bara här (de kommer i Fas 2).</li>
+    <li><b>Kokläge:</b> större text, aktuellt steg markeras och en rad visar att skärmen hålls tänd.</li>
+    <li><b>Kapitel:</b> varje kapitel har en emoji och en egen färg som syns på kortet och som prick vid recepten.</li>
+  </ul>
+</section>
+
+<script type="module">
+import { icon } from "../js/icons.js";
+
+/* ---- Påhittade exempeldata ---- */
+const chapters = [
+  { id: "brod", name: "Bröd", emoji: "🍞", c: "--ch-senap" },
+  { id: "vardag", name: "Vardagsmat", emoji: "🥘", c: "--ch-terrakotta" },
+  { id: "bakverk", name: "Bakverk", emoji: "🥐", c: "--ch-plommon" },
+  { id: "soppor", name: "Soppor", emoji: "🍲", c: "--ch-lera" },
+  { id: "sallader", name: "Sallader", emoji: "🥗", c: "--ch-oliv" },
+  { id: "efter", name: "Efterrätter", emoji: "🍓", c: "--ch-skog" },
+];
+const recipes = [
+  { title: "Kardemummabullar", ch: "bakverk", dev: false, ing: ["jäst", "smör", "mjölk", "socker", "kardemumma", "vetemjöl", "ägg", "pärlsocker"] },
+  { title: "Surdegsbröd", ch: "brod", dev: true, ing: ["vetemjöl", "fullkornsråg", "vatten", "surdeg", "salt"] },
+  { title: "Linsgryta med kokos", ch: "vardag", dev: false, ing: ["röda linser", "kokosmjölk", "lök", "vitlök", "ingefära", "krossade tomater", "spiskummin"] },
+  { title: "Tomatsoppa med fänkål", ch: "soppor", dev: false, ing: ["tomater", "fänkål", "lök", "grönsaksbuljong", "grädde"] },
+  { title: "Fänkålssallad med apelsin", ch: "sallader", dev: false, ing: ["fänkål", "apelsin", "rödlök", "olivolja", "dill"] },
+  { title: "Rabarberpaj", ch: "efter", dev: true, ing: ["rabarber", "smör", "vetemjöl", "havregryn", "socker", "kardemumma"] },
+  { title: "Vardagslasagne", ch: "vardag", dev: false, ing: ["köttfärs", "lasagneplattor", "krossade tomater", "mjölk", "ost", "lök"] },
+  { title: "Saffransbullar", ch: "bakverk", dev: false, ing: ["saffran", "kesella", "smör", "mjölk", "jäst", "vetemjöl", "russin"] },
+  { title: "Fröknäcke", ch: "brod", dev: false, ing: ["solroskärnor", "pumpakärnor", "sesamfrö", "linfrö", "majsstärkelse", "salt"] },
+  { title: "Pannkakor", ch: "vardag", dev: false, ing: ["vetemjöl", "mjölk", "ägg", "salt", "smör"] },
+];
+const chById = Object.fromEntries(chapters.map(c => [c.id, c]));
+const counts = { brod: 12, vardag: 34, bakverk: 18, soppor: 9, sallader: 7, efter: 11 };
+
+const kardemumma = {
+  title: "Kardemummabullar", ch: "bakverk", servings: "ca 30 bullar", time: "2 h 30 min",
+  desc: "Klassiska knutar med mycket kardemumma och pärlsocker.",
+  version: 3,
+  groups: [
+    { name: "Deg", items: [[25, "g", "jäst"], [150, "g", "smör"], [5, "dl", "mjölk"], [1, "dl", "socker"], [1, "msk", "kardemumma", "nymald"], [0.5, "tsk", "salt"], [13, "dl", "vetemjöl"]] },
+    { name: "Fyllning", items: [[150, "g", "smör", "rumsvarmt"], [1, "dl", "socker"], [1, "msk", "kardemumma"]] },
+    { name: "Garnering", items: [[1, "", "ägg"], [null, "", "pärlsocker"]] },
+  ],
+  steps: [
+    "Smält smöret, häll i mjölken och värm till fingervarmt (37 °C).",
+    "Smula jästen i en bunke och rör ut den i lite av degvätskan. Tillsätt resten av vätskan, socker, kardemumma och salt.",
+    "Arbeta in mjölet, lite i taget, tills degen släpper bunken. Knåda 10 min. Låt jäsa 45 min.",
+    "Rör ihop fyllningen. Kavla ut degen till en rektangel, bred på fyllningen och vik ihop.",
+    "Skär i remsor, sno och knyt. Låt jäsa 30 min under bakduk.",
+    "Pensla med ägg, strö över pärlsocker och grädda mitt i ugnen, 225 °C i 8–10 min.",
+  ],
+};
+const surdeg = {
+  title: "Surdegsbröd", ch: "brod", servings: "2 bröd", time: "24 h",
+  desc: "Ljust bröd med lite råg. Mål: öppnare inkråm och mörkare skorpa.",
+  version: 4,
+  groups: [
+    { name: "Deg", items: [[450, "g", "vetemjöl", "special"], [50, "g", "fullkornsråg"], [380, "g", "vatten"], [100, "g", "surdeg", "aktiv"], [10, "g", "salt"]] },
+  ],
+  steps: [
+    "Blanda mjöl och vatten, autolys 1 h.",
+    "Tillsätt surdeg och salt. Kläm in för hand.",
+    "Fyra omgångar sträck och vik med 30 min mellanrum.",
+    "Bulkjäs till ca 50 % större volym, 4–5 h.",
+    "Forma, lägg i jäskorg och kallres i kyl över natten.",
+    "Grädda i gjutjärnsgryta, 250 °C, 20 min med lock och 25 min utan.",
+  ],
+  logs: [
+    { date: "28 sep", stars: 4, text: "Bra öppning men blek skorpa. Testa 5 min längre utan lock." },
+    { date: "21 sep", stars: 3, text: "Lite kompakt. Bulken var nog för kort – kallt i köket." },
+  ],
+};
+
+/* ---- Hjälpfunktioner ---- */
+const $ = (s, el = document) => el.querySelector(s);
+document.querySelectorAll("[data-i]").forEach(el => el.outerHTML = icon(el.dataset.i));
+function fmt(a) {
+  if (a == null) return "";
+  const fr = { 0.25: "¼", 0.5: "½", 0.75: "¾" };
+  const whole = Math.floor(a), rest = +(a - whole).toFixed(2);
+  if (fr[rest]) return (whole ? whole : "") + fr[rest];
+  return String(a).replace(".", ",");
+}
+const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* ---- Startsida ---- */
+$("#chapters").innerHTML = chapters.map(c => `
+  <button class="chapter" style="--c: var(${c.c})">
+    <span class="emoji" aria-hidden="true">${c.emoji}</span>
+    <span><span class="name">${c.name}</span><span class="count">${counts[c.id]} recept</span></span>
+  </button>`).join("") + `<button class="chapter add">${icon("folder-plus")}Nytt kapitel</button>`;
+
+function row(r, sub, title = esc(r.title)) {
+  const ch = chById[r.ch];
+  return `<button class="rrow${r.dev ? " dev" : ""}" style="--c: var(${ch.c})">
+    <span class="dot" aria-hidden="true"></span>
+    <span class="txt"><span class="t">${title}</span><span class="sub">${sub}</span></span>
+    ${r.dev ? `<span class="badge">${icon("flask-conical")}Utv.</span>` : ""}
+    ${icon("chevron-right", "chev")}
+  </button>`;
+}
+const byTitle = t => recipes.find(r => r.title === t);
+$("#recent").innerHTML = [
+  [byTitle("Kardemummabullar"), "Bakverk · i dag"],
+  [byTitle("Linsgryta med kokos"), "Vardagsmat · i går"],
+  [byTitle("Tomatsoppa med fänkål"), "Soppor · tisdag"],
+].map(([r, s]) => row(r, s)).join("");
+$("#devlist").innerHTML = recipes.filter(r => r.dev).map(r => row(r, `${chById[r.ch].name} · v${r.title === "Surdegsbröd" ? 4 : 2} · senast testad 28 sep`)).join("");
+
+/* Enkel söksimulering: titel > ingrediens > kapitel, visar varför det matchade */
+const norm = s => s.toLocaleLowerCase("sv");
+const hl = (text, q) => {
+  const i = norm(text).indexOf(q);
+  return i < 0 ? esc(text) : esc(text.slice(0, i)) + "<mark>" + esc(text.slice(i, i + q.length)) + "</mark>" + esc(text.slice(i + q.length));
+};
+$("#demo-search").addEventListener("input", e => {
+  const q = norm(e.target.value.trim());
+  $("#home-browse").hidden = !!q;
+  $("#home-results").hidden = !q;
+  $("#snack").hidden = true;
+  if (!q) return;
+  const hits = [];
+  for (const r of recipes) {
+    const ch = chById[r.ch];
+    if (norm(r.title).includes(q)) hits.push([0, row(r, ch.name, hl(r.title, q))]);
+    else {
+      const ing = r.ing.find(i => norm(i).includes(q));
+      if (ing) hits.push([1, row(r, `ingrediens: <b>${esc(ing)}</b>`)]);
+      else if (norm(ch.name).includes(q)) hits.push([2, row(r, `kapitel: <b>${esc(ch.name)}</b>`)]);
+    }
+  }
+  hits.sort((a, b) => a[0] - b[0]);
+  $("#hits").innerHTML = hits.map(h => h[1]).join("");
+  $("#hits-title").textContent = hits.length ? `${hits.length} ${hits.length === 1 ? "träff" : "träffar"}` : "";
+  $("#no-hits").hidden = hits.length > 0;
+});
+
+/* ---- Receptvy och kokläge ---- */
+function ingredients(r) {
+  return r.groups.map(g => `
+    ${r.groups.length > 1 || g.name ? `<h3 class="group-name">${g.name}</h3>` : ""}
+    <ul class="ing">${g.items.map(([a, u, n, note]) => `
+      <li><span class="amt">${fmt(a)}</span><span class="unit">${u}</span>
+      <span class="name">${n}${note ? ` <span class="note">${note}</span>` : ""}</span></li>`).join("")}
+    </ul>`).join("");
+}
+function steps(r, current = -1) {
+  return `<ol class="steps">${r.steps.map((s, i) => `<li class="${i < current ? "done" : i === current ? "current" : ""}">${s}</li>`).join("")}</ol>`;
+}
+function recipeView(r, { cook = false, tab = "ing" } = {}) {
+  const ch = chById[r.ch];
+  const dev = !!r.logs;
+  return `
+    ${cook ? `<div class="awake">${icon("sun")}Skärmen hålls tänd<span class="pulse"></span></div>` : ""}
+    <div class="appbar">
+      <button class="icon-btn" aria-label="${cook ? "Stäng kokläge" : "Tillbaka"}">${icon(cook ? "x" : "chevron-left")}</button>
+      <span class="spacer"></span>
+      ${cook ? "" : `<button class="icon-btn" aria-label="Dela">${icon("share-2")}</button>
+      <button class="icon-btn" aria-label="Meny">${icon("ellipsis-vertical")}</button>`}
+    </div>
+    <header class="recipe-head">
+      <div class="kicker" style="--c: var(${ch.c})">${ch.emoji} ${ch.name}
+        ${dev ? `<span class="badge">${icon("flask-conical")}Under utveckling · v${r.version}</span>` : ""}</div>
+      <h2 class="recipe-title">${r.title}</h2>
+      ${cook ? "" : `<div class="meta"><span>${icon("shopping-basket")}${r.servings}</span><span>${icon("clock")}${r.time}</span></div>
+      <p class="desc">${r.desc}</p>`}
+    </header>
+    ${dev && !cook ? `<div class="devnote"><div class="h"><span>SENASTE TEST · ${r.logs[0].date}</span><span class="stars">${"★".repeat(r.logs[0].stars)}${"☆".repeat(5 - r.logs[0].stars)}</span></div>${r.logs[0].text}</div>` : ""}
+    <div class="seg" role="tablist" data-tab="${tab}">
+      <span class="pill" aria-hidden="true"></span>
+      <button role="tab" data-tab="ing" aria-selected="${tab === "ing"}">Ingredienser</button>
+      <button role="tab" data-tab="steps" aria-selected="${tab === "steps"}">Instruktioner</button>
+    </div>
+    <div class="panel" data-panel="ing" ${tab === "ing" ? "" : "hidden"}>${ingredients(r)}</div>
+    <div class="panel" data-panel="steps" ${tab === "steps" ? "" : "hidden"}>${steps(r, cook ? 2 : -1)}</div>
+    ${cook ? `<button class="btn btn-quiet exit-cook">${icon("x")}Avsluta kokläge</button>` : `
+    <div class="recipe-actions">
+      <button class="btn btn-primary">${icon("chef-hat")}Kokläge</button>
+      ${dev ? `<button class="btn btn-quiet">${icon("notebook-pen")}Logga test</button>` : `<button class="btn btn-quiet">${icon("share-2")}Dela</button>`}
+    </div>
+    ${dev ? `<div class="testlogs"><h3 class="section-title">Testloggar för v${r.version}</h3>${r.logs.map(l => `
+      <div class="log"><div class="h"><span>${l.date}</span><span class="stars">${"★".repeat(l.stars)}${"☆".repeat(5 - l.stars)}</span></div>${l.text}</div>`).join("")}</div>` : ""}`}
+  `;
+}
+function wire(root) {
+  root.addEventListener("click", e => {
+    const tabBtn = e.target.closest("[role=tab]");
+    if (tabBtn) {
+      const t = tabBtn.dataset.tab;
+      const seg = tabBtn.parentElement;
+      seg.dataset.tab = t;
+      seg.querySelectorAll("[role=tab]").forEach(b => b.setAttribute("aria-selected", b === tabBtn));
+      root.querySelectorAll("[data-panel]").forEach(p => p.hidden = p.dataset.panel !== t);
+      return;
+    }
+    const li = e.target.closest(".ing li, .steps li");
+    if (li) li.classList.toggle("done");
+  });
+}
+const recipeEl = $("#recipe"), cookEl = $("#cook");
+function showRecipe(status) {
+  const dev = status === "dev";
+  recipeEl.classList.toggle("is-dev", dev);
+  recipeEl.innerHTML = recipeView(dev ? surdeg : kardemumma);
+  document.querySelectorAll("[data-status]").forEach(b => b.setAttribute("aria-pressed", b.dataset.status === status));
+}
+document.querySelectorAll("[data-status]").forEach(b => b.addEventListener("click", () => showRecipe(b.dataset.status)));
+showRecipe("locked");
+wire(recipeEl);
+cookEl.innerHTML = recipeView(kardemumma, { cook: true, tab: "steps" });
+wire(cookEl);
+
+/* ---- Ljust/mörkt ---- */
+document.querySelectorAll("[data-theme-set]").forEach(b => b.addEventListener("click", () => {
+  const v = b.dataset.themeSet;
+  if (v === "system") document.documentElement.removeAttribute("data-theme");
+  else document.documentElement.setAttribute("data-theme", v);
+  document.querySelectorAll("[data-theme-set]").forEach(x => x.setAttribute("aria-pressed", x === b));
+}));
+</script>
+</body>
+</html>
