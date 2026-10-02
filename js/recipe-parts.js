@@ -67,8 +67,10 @@ export async function testLogSheet(versionId, logId = null) {
       <img ${added.has(pid) ? `src="${tempUrl(pid, added.get(pid).blob)}"` : `data-photo="${pid}"`} alt="">
       <button type="button" class="thumb-del" data-del-photo="${pid}" aria-label="Ta bort foto">${icon('x')}</button>
     </span>`).join('')}
-    <label class="thumb add-photo">${icon('plus')}<span>Foto</span>
-      <input type="file" accept="image/*" multiple hidden id="log-photo-input"></label>`;
+    <label class="thumb add-photo">${icon('camera')}<span>Kamera</span>
+      <input type="file" accept="image/*" capture="environment" hidden class="photo-input"></label>
+    <label class="thumb add-photo">${icon('image')}<span>Galleri</span>
+      <input type="file" accept="image/*" multiple hidden class="photo-input"></label>`;
 
   const result = await sheet({
     title: cur ? 'Ändra test' : `Logga test av v${ver?.number ?? ''}`,
@@ -112,7 +114,7 @@ export async function testLogSheet(versionId, logId = null) {
         redraw();
       });
       grid.addEventListener('change', async e => {
-        if (e.target.id !== 'log-photo-input') return;
+        if (!e.target.classList.contains('photo-input')) return;
         const files = [...e.target.files];
         const err = el.querySelector('#photo-err');
         err.hidden = true;

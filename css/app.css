@@ -500,3 +500,10 @@ ol.dlist { counter-reset: d; }
 .rescue p { margin: 0; font-size: var(--fs-sm); }
 .rescue button { min-height: var(--tap); border: 0; border-radius: 999px; font-weight: 600; background: var(--surface-2); color: var(--text); }
 .rescue #rescue-reload { background: var(--accent); color: var(--accent-ink); margin-top: var(--sp-2); }
+
+/* ---------- Favoriter ---------- */
+.fav-btn.on { color: var(--accent); }
+.fav-btn.on .icon { fill: currentColor; }
+.fav-icon { color: var(--accent); fill: currentColor; }
+.section-title .inline-icon { width: 12px; height: 12px; vertical-align: -1px; }
+.add-photo span { line-height: 1.1; }

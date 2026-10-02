@@ -54,6 +54,7 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
         <button type="button" class="icon-btn" data-action="back" aria-label="${cook ? 'Stäng kokläge' : 'Tillbaka'}">${icon(cook ? 'x' : 'chevron-left')}</button>
         <span class="spacer"></span>
         ${cook ? '' : `
+          <button type="button" class="icon-btn fav-btn${recipe.favorite ? ' on' : ''}" data-action="favorite" aria-pressed="${!!recipe.favorite}" aria-label="${recipe.favorite ? 'Ta bort från favoriter' : 'Lägg till i favoriter'}">${icon('heart')}</button>
           <button type="button" class="icon-btn" data-action="share" aria-label="Dela">${icon('share-2')}</button>
           <button type="button" class="icon-btn" data-action="menu" aria-label="Meny">${icon('ellipsis-vertical')}</button>`}
       </div>
@@ -161,6 +162,11 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
     const b = bundle(id);
     if (a === 'back') back(cook ? `/recept/${id}` : '/');
     else if (a === 'share') shareRecipe(b, { scale: t.scale });
+    else if (a === 'favorite') {
+      const fav = !b.recipe.favorite;
+      updateRecipe(id, { favorite: fav });
+      snack(fav ? 'Tillagd i favoriter' : 'Borttagen från favoriter');
+    }
     else if (a === 'scale') { const f = await scaleSheet(b.version, t.scale); if (f) { t.scale = f; draw(); } }
     else if (a === 'menu') openMenu(id);
     else if (a === 'edit') editFlow(id);
