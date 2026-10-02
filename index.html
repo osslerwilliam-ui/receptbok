@@ -35,6 +35,43 @@
 <link rel="modulepreload" href="js/components.js">
 <link rel="modulepreload" href="js/views/home.js">
 <script type="module" src="js/app.js"></script>
+<script>
+  // Nödläge: om appen inte har startat efter några sekunder visas en hjälpruta.
+  // "Reparera" tar bort appens sparade programfiler (inte recepten) och laddar om.
+  setTimeout(function () {
+    if (document.documentElement.dataset.booted || (document.getElementById('app') || {}).children?.length) return;
+    var box = document.createElement('div');
+    box.className = 'rescue';
+    box.innerHTML = '<h1>Receptboken startar inte</h1>' +
+      '<p>Dina recept finns kvar i telefonen. Prova i den här ordningen:</p>' +
+      '<p>1. Stäng alla andra fönster och Chrome-flikar med Receptbok och tryck <b>Ladda om</b>.</p>' +
+      '<p>2. Hjälper inte det: tryck <b>Reparera appen</b>. Appens programfiler hämtas på nytt – recepten påverkas inte. Kräver internet.</p>' +
+      '<button type="button" id="rescue-reload">Ladda om</button>' +
+      '<button type="button" id="rescue-repair">Reparera appen</button>';
+    document.body.appendChild(box);
+    document.getElementById('rescue-reload').onclick = function () { location.reload(); };
+    document.getElementById('rescue-repair').onclick = async function () {
+      this.disabled = true;
+      this.textContent = 'Reparerar…';
+      try {
+        var regs = await navigator.serviceWorker.getRegistrations();
+        for (var r of regs) await r.unregister();
+        var keys = await caches.keys();
+        for (var k of keys) if (k.indexOf('receptbok-') === 0) await caches.delete(k);
+        // Installera service workern på nytt: den hämtar alla filer med nya adresser (?v=…),
+        // så inga gamla kopior följer med. Vänta tills den är klar och ladda sedan om.
+        var reg = await navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' });
+        await new Promise(function (done) {
+          var w = reg.installing || reg.waiting || reg.active;
+          if (!w || w.state === 'activated') return done();
+          w.addEventListener('statechange', function () { if (w.state === 'activated' || w.state === 'redundant') done(); });
+          setTimeout(done, 20000);
+        });
+      } catch (e) {}
+      location.reload();
+    };
+  }, 6000);
+</script>
 </head>
 <body>
 <div id="app" class="app"></div>

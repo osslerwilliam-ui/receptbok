@@ -77,6 +77,13 @@ Ett recept är antingen **under utveckling** (gulaktig anteckningsblockston, mä
 - **Snabbrättning:** tryck *Redigera* på ett klart recept och välj *Snabbrättning* för stavfel och små ändringar – ingen ny version skapas.
 - **Visa historik:** via **⋮** när det finns fler än en version. Där ser du alla versioner med datum, vad som ändrades, antal tester och snittbetyg. Öppna en version för att se den (skrivskyddad) med dess tester, eller tryck **Jämför två versioner** för att se vad som lagts till (grönt), tagits bort (rött) och ändrats (gult).
 
+## Om appen visar en tom sida
+
+**Rensa aldrig Chromes data för sidan och avinstallera inte appen – då försvinner recepten.** Gör så här i stället:
+
+1. Stäng Receptbok helt (svep bort den bland öppna appar) och stäng alla Chrome-flikar där Receptbok är öppen. Öppna sedan appen igen.
+2. Startar den fortfarande inte visas efter några sekunder rutan *"Receptboken startar inte"*. Tryck **Reparera appen** (kräver internet). Appens programfiler hämtas på nytt – recepten påverkas inte.
+
 ## För utveckling
 
 - Ren HTML/CSS/JavaScript (ES-moduler) utan byggsteg. Allt ligger i repots rot och publiceras som det är.

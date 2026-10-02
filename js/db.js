@@ -9,6 +9,10 @@ const DB_VERSION = 2; // 2: tabell för foton
 export const STORES = ['chapters', 'recipes', 'variants', 'versions', 'testlogs'];
 
 let dbPromise = null;
+let blockedHandler = () => {};
+
+/** Anropas om databasen inte kan uppgraderas för att appen är öppen i ett annat fönster eller en annan flik. */
+export function onBlocked(fn) { blockedHandler = fn; }
 
 export function openDB() {
   if (!dbPromise) {
@@ -23,10 +27,12 @@ export function openDB() {
         // Foton ligger i en egen tabell och läses bara när de ska visas (de är stora).
         if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos', { keyPath: 'id' });
       };
+      req.onblocked = () => blockedHandler();
       req.onsuccess = () => {
         const db = req.result;
-        // Om en nyare flik uppgraderar databasen: stäng denna anslutning så att den inte blockerar.
-        db.onversionchange = () => db.close();
+        // Om en nyare version av appen (i ett annat fönster) uppgraderar databasen:
+        // stäng direkt så att den inte blockeras, och ladda om för att få den nya versionen.
+        db.onversionchange = () => { db.close(); setTimeout(() => location.reload(), 100); };
         resolve(db);
       };
       req.onerror = () => reject(req.error);
