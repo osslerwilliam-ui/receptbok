@@ -493,3 +493,10 @@ ol.dlist { counter-reset: d; }
 .add-photo .icon { width: 20px; height: 20px; }
 .photo-edit.busy { opacity: .5; pointer-events: none; }
 .photo-full { width: 100%; max-height: 72dvh; object-fit: contain; border-radius: var(--radius-sm); display: block; background: var(--surface-2); }
+
+/* ---------- Nödläge (visas av index.html om appen inte startar) ---------- */
+.rescue { max-width: 480px; margin: 0 auto; padding: calc(var(--sp-6) + env(safe-area-inset-top, 0px)) var(--sp-4) var(--sp-6); display: grid; gap: var(--sp-3); }
+.rescue h1 { font: 600 var(--fs-xl)/1.2 var(--font-serif); margin: 0; }
+.rescue p { margin: 0; font-size: var(--fs-sm); }
+.rescue button { min-height: var(--tap); border: 0; border-radius: 999px; font-weight: 600; background: var(--surface-2); color: var(--text); }
+.rescue #rescue-reload { background: var(--accent); color: var(--accent-ink); margin-top: var(--sp-2); }

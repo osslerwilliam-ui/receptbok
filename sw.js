@@ -1,6 +1,6 @@
 // Service worker: gör att appen fungerar offline.
 // HÖJ VERSIONEN vid varje release, annars når uppdateringen inte telefonen.
-const VERSION = '1.3.0';
+const VERSION = '1.3.1';
 const CACHE = `receptbok-v${VERSION}`;
 
 const FILES = [
@@ -44,8 +44,17 @@ const FILES = [
 ];
 
 self.addEventListener('install', event => {
-  // cache: 'reload' hämtar färska filer förbi webbläsarens HTTP-cache.
-  event.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES.map(f => new Request(f, { cache: 'reload' })))));
+  // Varje fil hämtas med ?v=VERSION så att GitHub Pages inte kan svara med en gammal kopia
+  // precis efter en publicering (då kan gamla och nya filer annars blandas och appen gå sönder).
+  // Sparas utan ?v= så att appens vanliga adresser hittas.
+  event.waitUntil((async () => {
+    const cache = await caches.open(CACHE);
+    await Promise.all(FILES.map(async f => {
+      const res = await fetch(new Request(`${f}${f.includes('?') ? '&' : '?'}v=${VERSION}`, { cache: 'reload' }));
+      if (!res.ok) throw new Error(`Kunde inte hämta ${f}: ${res.status}`);
+      await cache.put(f, res);
+    }));
+  })());
 });
 
 self.addEventListener('activate', event => {

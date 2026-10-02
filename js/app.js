@@ -80,6 +80,13 @@ async function loadData() {
 
 async function boot() {
   navigator.storage?.persist?.().catch(() => {});
+  // Service workern registreras först, så att rättade versioner kan nå telefonen även om något går fel nedan.
+  registerServiceWorker();
+  db.onBlocked(() => {
+    app.innerHTML = `<div class="page"><div class="empty"><div class="big">Receptboken är öppen på ett annat ställe</div>
+      <p>Appen behöver uppdatera sin lagring men är öppen i ett annat fönster eller en Chrome-flik. Stäng de andra fönstren och flikarna med Receptbok – då startar appen här automatiskt.</p>
+      <p class="muted">Dina recept är kvar.</p></div></div>`;
+  });
   let data;
   try {
     data = await loadData();
@@ -93,7 +100,7 @@ async function boot() {
   setAll(data);
   onSaveError(() => snack('Kunde inte spara ändringen. Försök igen.', { duration: 7000 }));
   start(onRoute);
-  registerServiceWorker();
+  document.documentElement.dataset.booted = '1';
 
   // Förladda övriga vyer när appen är ledig, så att de öppnas direkt.
   const preload = () => {
