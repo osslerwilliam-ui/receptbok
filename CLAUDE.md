@@ -82,7 +82,8 @@ Regler:
 - Varje variant har sin egen versionskedja. En ny variant skapas genom att kopiera valfri version från en annan variant (blir v1 i den nya varianten, `basedOnVersionId` sparas).
 - Bara den senaste versionen i en variant under utveckling är redigerbar. När en ny version skapas fryses den föregående.
 - **Låsa:** variantens status blir `locked`, aktuell version fryses. Receptvyn visar då bara ingredienser och instruktioner – inga testloggar eller utvecklingsverktyg. Historiken nås via meny ("Visa historik"), om fler än en version finns.
-- **Lås upp:** sätter status till `development` och skapar en ny redigerbar version baserad på den låsta.
+- **Lås upp:** sätter status till `development` och gör den senaste versionen redigerbar igen (ingen ny version skapas – ändringar hör till den versionen). Ny version skapas bara med "Ny version". (Ändrat på ägarens önskemål.)
+- **Snabbrättning:** stavfel och små ändringar i ett låst recept görs direkt i den låsta versionen, utan upplåsning eller ny version.
 - Ett recept räknas som "under utveckling" i listor om någon av dess varianter är det.
 
 ## Skärmar

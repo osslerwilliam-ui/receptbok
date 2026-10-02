@@ -247,7 +247,7 @@ export function newVersion(variantId) {
   commit([
     { store: 'versions', put: { ...cur, frozen: true, updatedAt: t } },
     { store: 'versions', put: ver },
-    { store: 'variants', put: { ...variant, status: 'development', prevStatus: undefined, currentVersionId: ver.id, updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: 'development', currentVersionId: ver.id, updatedAt: t } },
   ]);
   return ver;
 }
@@ -262,8 +262,8 @@ export function discardVersion(versionId) {
   const t = now();
   commit([
     { store: 'versions', del: ver.id },
-    { store: 'versions', put: { ...prev, frozen: variant.prevStatus === 'locked', updatedAt: t } },
-    { store: 'variants', put: { ...variant, status: variant.prevStatus || 'development', prevStatus: undefined, currentVersionId: prev.id, updatedAt: t } },
+    { store: 'versions', put: { ...prev, frozen: false, updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: 'development', currentVersionId: prev.id, updatedAt: t } },
   ]);
 }
 
@@ -283,18 +283,24 @@ export function lockVariant(variantId) {
   const t = now();
   commit([
     { store: 'versions', put: { ...cur, frozen: true, updatedAt: t } },
-    { store: 'variants', put: { ...variant, status: 'locked', prevStatus: undefined, updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: 'locked', updatedAt: t } },
   ]);
 }
 
-/** Lås upp: status "development" och en ny redigerbar version baserad på den låsta. */
+/**
+ * Lås upp: status "development" och den senaste versionen blir redigerbar igen.
+ * Ingen ny version skapas – ändringar hör till den senaste versionen.
+ * (Ägarens val, avviker medvetet från ursprungsspecifikationen.)
+ */
 export function unlockVariant(variantId) {
   const variant = state.variants.get(variantId);
-  const ver = newVersion(variantId);
-  // Kom ihåg att den var låst, så att en oförändrad upplåsning kan ångras.
-  const v2 = state.variants.get(variantId);
-  commit([{ store: 'variants', put: { ...v2, prevStatus: variant.status } }]);
-  return ver;
+  const cur = state.versions.get(variant.currentVersionId);
+  const t = now();
+  commit([
+    { store: 'versions', put: { ...cur, frozen: false, updatedAt: t } },
+    { store: 'variants', put: { ...variant, status: 'development', updatedAt: t } },
+  ]);
+  return state.versions.get(cur.id);
 }
 
 /** Snabbrättning: ändrar en (ev. fryst) version utan att skapa en ny. */
