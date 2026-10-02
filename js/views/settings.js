@@ -5,6 +5,7 @@ import { state, meta } from '../store.js';
 import { exportBackup, parseBackup, importBackup, buildBackup, downloadJSON } from '../backup.js';
 import { fmtDate, isoDay } from '../format.js';
 import { back } from '../router.js';
+import { getTheme, setTheme } from '../theme.js';
 
 export function render(root) {
   root.innerHTML = `
@@ -13,6 +14,14 @@ export function render(root) {
     </div>
     <div class="page settings">
       <header class="page-head"><h1 class="page-title">Inställningar</h1></header>
+
+      <section class="card">
+        <h2 class="card-title">${icon('sun')}Utseende</h2>
+        <div class="choice" role="radiogroup" aria-label="Färgläge">
+          ${[['system', 'Som telefonen'], ['light', 'Ljust'], ['dark', 'Mörkt']].map(([v, l]) =>
+            `<button type="button" role="radio" data-theme-choice="${v}" aria-checked="${getTheme() === v}">${l}</button>`).join('')}
+        </div>
+      </section>
 
       <section class="card">
         <h2 class="card-title">${icon('hard-drive-download')}Backup</h2>
@@ -88,6 +97,12 @@ export function render(root) {
   }, { once: false });
 
   root.onclick = async e => {
+    const themeBtn = e.target.closest('[data-theme-choice]');
+    if (themeBtn) {
+      setTheme(themeBtn.dataset.themeChoice);
+      root.querySelectorAll('[data-theme-choice]').forEach(b => b.setAttribute('aria-checked', b === themeBtn));
+      return;
+    }
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
     const a = btn.dataset.action;

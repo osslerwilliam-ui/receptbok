@@ -20,6 +20,7 @@ const views = {
 const app = document.getElementById('app');
 let cleanup = null;
 let navToken = 0;
+let prevRoute = null;
 
 function runCleanup() {
   try { cleanup?.(); } catch (err) { console.error(err); }
@@ -34,7 +35,8 @@ async function onRoute(route, ctx) {
     runCleanup();
     const view = document.createElement('div');
     view.className = `view view-${route.name}`;
-    const r = mod.render(view, route.params, ctx, { cook: route.name === 'cook' });
+    const r = mod.render(view, route.params, { ...ctx, prev: prevRoute }, { cook: route.name === 'cook' });
+    prevRoute = route;
     cleanup = typeof r === 'function' ? r : null;
     app.replaceChildren(view);
     window.scrollTo(0, ctx.scrollY);

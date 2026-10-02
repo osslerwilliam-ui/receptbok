@@ -50,10 +50,12 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Startsidan:** sök direkt i rutan överst. Sökningen hittar titlar, ingredienser, taggar och kapitel och klarar enkla stavfel. Under rutan finns kapitlen, senast visade recept och recept under utveckling.
 - **Kapitel:** skapa med *Nytt kapitel*. Byt namn, ikon och färg eller ta bort via **⋮** inne i kapitlet. Ordningen ändras med *Sortera* på startsidan.
 - **Nytt recept:** gå in i ett kapitel och tryck **Nytt recept**. Allt sparas automatiskt medan du skriver.
+- **Redigera:** överst namn, kapitel och taggar. Därunder växlar du mellan flikarna *Ingredienser* och *Instruktioner*. Håll fingret på **⋮** till höger om en rad och dra för att flytta den, eller tryck kort på **⋮** för att flytta upp/ned eller ta bort.
 - **Klistra in:** under Ingredienser och Instruktioner finns *Klistra in*. Klistra in flera rader på en gång, t.ex. `500 g vetemjöl`. En rad som slutar med kolon (`Deg:`) blir en grupp.
-- **Receptvyn:** växla mellan *Ingredienser* och *Instruktioner*. Tryck på en rad för att bocka av den.
+- **Receptvyn:** växla mellan *Ingredienser* och *Instruktioner*. Tryck på en rad för att bocka av den. Avbockningarna nollställs när du lämnar receptet.
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
-- **Dela:** skickar receptet som text via Androids delningsmeny.
+- **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
+- **Ljust eller mörkt läge:** kugghjulet → *Utseende* → Som telefonen, Ljust eller Mörkt.
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
 ## För utveckling
