@@ -179,18 +179,16 @@ export async function editFlow(id) {
   const b = bundle(id);
   if (!b) return;
   if (b.variant.status === 'development') { navigate(`/recept/${id}/redigera`); return; }
-  const next = versionsOf(b.variant.id).length + 1;
   const choice = await menuSheet({
     title: 'Receptet är klart (låst)',
     items: [
       { label: 'Snabbrättning – stavfel och små ändringar, ingen ny version', value: 'fix', icon: 'pencil' },
-      { label: `Lås upp och skapa version ${next}`, value: 'unlock', icon: 'lock-open' },
+      { label: `Lås upp och fortsätt utveckla v${b.version.number}`, value: 'unlock', icon: 'lock-open' },
     ],
   });
   if (choice === 'fix') navigate(`/recept/${id}/rattning`);
   else if (choice === 'unlock') {
-    const ver = unlockVariant(b.variant.id);
-    pendingDiscard.add(ver.id);
+    unlockVariant(b.variant.id);
     navigate(`/recept/${id}/redigera`);
   }
 }
@@ -229,7 +227,7 @@ async function openMenu(id) {
     snack(`Låst – version ${b.version.number} är klar`);
   } else if (choice === 'unlock') {
     const v = unlockVariant(b.variant.id);
-    snack(`Upplåst – version ${v.number} skapades för vidareutveckling`);
+    snack(`Upplåst – du utvecklar vidare på version ${v.number}`);
   } else if (choice === 'move') {
     const target = await pickChapterSheet({ title: 'Flytta till kapitel', current: r.chapterId && state.chapters.has(r.chapterId) ? r.chapterId : NO_CHAPTER });
     if (!target) return;

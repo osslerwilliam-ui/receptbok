@@ -65,7 +65,7 @@ Ett recept är antingen **under utveckling** (gulaktig anteckningsblockston, mä
 - **Logga test:** efter att du lagat receptet – datum, betyg 1–5 och en kommentar. Testerna syns längst ner i receptet och det senaste högst upp. Tryck på ett test för att ändra eller ta bort det.
 - **Ny version:** kopierar receptet till nästa version (t.ex. v4) och fryser den förra. Medan du redigerar ser du testerna från förra versionen och fyller i *Vad ändrade du?*. Ändrar du ingenting sparas ingen ny version.
 - **Lås – markera som klart:** via **⋮**. Då visas bara ingredienser och instruktioner.
-- **Lås upp:** via **⋮** på ett klart recept. Skapar en ny version att utveckla vidare.
+- **Lås upp:** via **⋮** på ett klart recept. Receptet blir under utveckling igen och du fortsätter på den senaste versionen – ingen ny version skapas. Vill du ha en ny version trycker du *Ny version*.
 - **Snabbrättning:** tryck *Redigera* på ett klart recept och välj *Snabbrättning* för stavfel och små ändringar – ingen ny version skapas.
 - **Visa historik:** via **⋮** när det finns fler än en version. Där ser du alla versioner med datum, vad som ändrades, antal tester och snittbetyg. Öppna en version för att se den (skrivskyddad) med dess tester, eller tryck **Jämför två versioner** för att se vad som lagts till (grönt), tagits bort (rött) och ändrats (gult).
 
