@@ -331,6 +331,8 @@
 [data-palette="serios"] .seg .pill { background: var(--text); box-shadow: none; }
 [data-palette="serios"] .seg button[aria-selected="true"] { color: var(--bg); }
 [data-palette="serios"] .vchip { background: transparent; box-shadow: inset 0 0 0 1px var(--line); }
+/* Vald variant: svart text med tjock ram nedtill i stället för omvända färger. */
+[data-palette="serios"] .vchip.on { background: transparent; color: var(--text); font-weight: 600; box-shadow: inset 0 0 0 1px var(--text), inset 0 -3px 0 var(--text); }
 [data-palette="serios"] .badge { background: none; border: 1px dashed currentColor; }
 [data-palette="serios"] .devnote { background: none; border-left: 2px solid var(--text); padding-left: var(--sp-3); }
 [data-palette="serios"] .wordmark { border-bottom: 2px solid var(--text); padding-bottom: 6px; }
