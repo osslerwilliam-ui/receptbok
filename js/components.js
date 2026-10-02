@@ -9,10 +9,10 @@ export const colorVar = ch => `var(--ch-${ch && CHAPTER_COLORS.includes(ch.color
 
 export function link(path) { return `href="#${esc(path)}" data-link`; }
 
-export function recipeRow(r, { sub, titleHtml } = {}) {
+export function recipeRow(r, { sub, titleHtml, path = null } = {}) {
   const ch = chapterOf(r);
   const dev = isInDevelopment(r.id);
-  return `<a class="rrow${dev ? ' dev' : ''}" ${link('/recept/' + r.id)} style="--c: ${colorVar(ch)}">
+  return `<a class="rrow${dev ? ' dev' : ''}" ${link(path || '/recept/' + r.id)} style="--c: ${colorVar(ch)}">
     <span class="dot" aria-hidden="true"></span>
     <span class="txt"><span class="t">${titleHtml ?? esc(displayTitle(r))}</span>${sub ? `<span class="sub">${sub}</span>` : ''}</span>
     ${dev ? `<span class="badge">${icon('flask-conical')}Utv.</span>` : ''}
