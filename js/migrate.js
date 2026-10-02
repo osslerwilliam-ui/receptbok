@@ -7,7 +7,7 @@
 // 3. Vid start körs migreringen automatiskt. Innan den körs laddas en backup ned och en kopia
 //    sparas i databasen (se app.js), så att ingen data kan gå förlorad.
 
-export const SCHEMA_VERSION = 3;
+export const SCHEMA_VERSION = 4;
 
 export const MIGRATIONS = {
   // Fas 2: status och frysta versioner används på riktigt.
@@ -25,6 +25,11 @@ export const MIGRATIONS = {
   // Fas 3: testloggar kan ha foton (id:n till fototabellen).
   3: data => {
     for (const l of data.testlogs) if (!Array.isArray(l.photos)) l.photos = [];
+    return data;
+  },
+  // Favoritmarkerade recept.
+  4: data => {
+    for (const r of data.recipes) r.favorite = r.favorite === true;
     return data;
   },
 };

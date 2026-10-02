@@ -134,7 +134,7 @@ export function isInDevelopment(recipeId) {
 
 export function createRecipe({ title = '', chapterId = null } = {}) {
   const t = now();
-  const recipe = { id: uuid(), title, chapterId, tags: [], description: '', defaultVariantId: null, createdAt: t, updatedAt: t };
+  const recipe = { id: uuid(), title, chapterId, tags: [], description: '', defaultVariantId: null, favorite: false, createdAt: t, updatedAt: t };
   // Nya recept börjar som "under utveckling". Första gången man trycker Klar frågar appen om det ska låsas.
   const variant = { id: uuid(), recipeId: recipe.id, name: 'Standard', status: 'development', currentVersionId: null, sortOrder: 0, createdAt: t, updatedAt: t };
   const version = {

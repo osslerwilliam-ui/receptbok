@@ -101,6 +101,12 @@ function renderBrowse(el) {
       <button type="button" class="chapter add" data-action="new-chapter">${icon('folder-plus')}<span>Nytt kapitel</span></button>
     </div>`;
 
+  const favs = recipes.filter(r => r.favorite).sort((a, b) => displayTitle(a).localeCompare(displayTitle(b), 'sv'));
+  if (favs.length) {
+    html += `<h2 class="section-title">${icon('heart', 'inline-icon fav-icon')} Favoriter</h2><div class="rlist">${favs.map(r =>
+      recipeRow(r, { sub: esc(chapterOf(r)?.name || 'Utan kapitel') })).join('')}</div>`;
+  }
+
   const recent = recipes.filter(r => r.lastViewedAt).sort((a, b) => b.lastViewedAt.localeCompare(a.lastViewedAt)).slice(0, 5);
   if (recent.length) {
     html += `<h2 class="section-title">Senast visade</h2><div class="rlist">${recent.map(r =>
