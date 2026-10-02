@@ -8,13 +8,18 @@
 <meta name="theme-color" content="#f5efe4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1c1714" media="(prefers-color-scheme: dark)">
 <script>
-  // Valt färgläge (se js/theme.js) sätts innan sidan ritas, så att den inte blinkar.
+  // Valt färgläge och färgtema (se js/theme.js) sätts innan sidan ritas, så att den inte blinkar.
   try {
     var t = localStorage.getItem('receptbok-tema');
-    if (t === 'light' || t === 'dark') {
-      document.documentElement.dataset.theme = t;
-      document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.content = t === 'dark' ? '#1c1714' : '#f5efe4'; });
-    }
+    var p = localStorage.getItem('receptbok-palett');
+    var bg = {"terrakotta": ["#f5efe4", "#1c1714"], "olivlund": ["#f1efe6", "#191b15"], "ockra": ["#f4eedf", "#16181f"], "rost": ["#eff0ec", "#181a1d"], "plommon": ["#f3ede4", "#1c1619"], "serios": ["#ffffff", "#0f0f0f"]};
+    if (!bg[p]) p = 'terrakotta';
+    if (p !== 'terrakotta') document.documentElement.dataset.palette = p;
+    if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+      var dark = t === 'dark' || (t !== 'light' && m.media.indexOf('dark') >= 0);
+      m.content = bg[p][dark ? 1 : 0];
+    });
   } catch (e) {}
 </script>
 <link rel="manifest" href="manifest.webmanifest">
@@ -24,6 +29,7 @@
 <link rel="preload" href="fonts/fraunces-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/tokens.css">
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/themes.css">
 <link rel="modulepreload" href="js/db.js">
 <link rel="modulepreload" href="js/migrate.js">
 <link rel="modulepreload" href="js/store.js">

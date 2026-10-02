@@ -507,3 +507,21 @@ ol.dlist { counter-reset: d; }
 .fav-icon { color: var(--accent); fill: currentColor; }
 .section-title .inline-icon { width: 12px; height: 12px; vertical-align: -1px; }
 .add-photo span { line-height: 1.1; }
+
+/* ---------- Rubrikfärg (egen färg i vissa teman) ---------- */
+.wordmark, .chapter .name, .rrow .t, .page-title, .recipe-title, .group-name, .ed-heading, .ro-heading,
+.sheet-title, .card-title, .empty .big, .title-input, .vrow .vnote, .theme-name { color: var(--title); }
+.text-btn { color: var(--accent-strong); }
+
+/* ---------- Temaväljare ---------- */
+.theme-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(118px, 1fr)); gap: var(--sp-2); margin-top: var(--sp-3); }
+.theme-card {
+  display: grid; gap: 6px; text-align: left; padding: var(--sp-3); border: 0; border-radius: var(--radius-sm);
+  background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); min-height: var(--tap);
+}
+.theme-card[aria-checked="true"] { box-shadow: inset 0 0 0 2px var(--accent); }
+.theme-name { font: 600 var(--fs-sm)/1.2 var(--font-serif); display: flex; justify-content: space-between; gap: 4px; }
+.theme-name .icon { width: 16px; height: 16px; color: var(--accent); }
+.theme-sw { display: flex; gap: 3px; }
+.theme-sw span { flex: 1; height: 22px; border-radius: 4px; box-shadow: inset 0 0 0 1px rgb(0 0 0 / .08); }
+.theme-desc { font-size: var(--fs-xs); color: var(--text-muted); line-height: 1.35; }

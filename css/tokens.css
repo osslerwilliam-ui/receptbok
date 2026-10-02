@@ -29,6 +29,7 @@
   --surface: #fdf9f2;
   --surface-2: #ece3d4;
   --text: #2f2621;
+  --title: var(--text); /* rubriker – egen färg i vissa teman */
   --text-muted: #75675a;
   --line: #e2d6c4;
   --accent: #b0502c;
@@ -63,6 +64,7 @@
   /* Typografi */
   --font-serif: "Fraunces", "Iowan Old Style", Georgia, serif;
   --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-sans); /* används av temat Seriös */
   --fs-xs: .8125rem;
   --fs-sm: .9375rem;
   --fs-base: 1.0625rem;
