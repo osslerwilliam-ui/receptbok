@@ -76,6 +76,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
         </details>
         <label class="field changenote-field"><span class="field-label">Vad ändrade du jämfört med v${prevVersion.number}?</span>
           <textarea id="f-change" class="input" rows="2" placeholder="t.ex. Mer vatten, 10 min längre i ugnen" data-f="changeNote">${esc(form.changeNote)}</textarea></label>` : ''}
+      ${b.variants.length > 1 ? `<p class="edit-variant">${icon('copy', 'inline-icon')}Variant: <b>${esc(b.variant.name)}</b> · v${version.number}</p>` : ''}
       <label class="sr-only" for="f-title">Titel</label>
       <textarea id="f-title" class="title-input" rows="1" placeholder="Receptets namn" data-f="title" enterkeyhint="next">${esc(form.title)}</textarea>
 

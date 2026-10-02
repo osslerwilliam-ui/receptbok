@@ -92,9 +92,11 @@ export function groupItems(list) {
 }
 
 /** Text för delning enligt formatet i CLAUDE.md. */
-export function shareText({ title, variantName, servings, ingredients, steps }) {
+export function shareText({ title, variantName, servings, ingredients, steps, scale = 1 }) {
   const lines = [variantName ? `${title} – ${variantName}` : title];
-  if (servings) lines.push(`(${servings})`);
+  if (servings) lines.push(`(${scaleServings(servings, scale)})`);
+  if (scale !== 1) lines.push(`(skalat ×${fmtFactor(scale)})`);
+  ingredients = ingredients.map(i => ({ ...i, amount: scaleAmount(i.amount, i.unit, scale) }));
   if (ingredients.length) {
     lines.push('', 'INGREDIENSER');
     groupItems(ingredients).forEach((g, i) => {
@@ -134,3 +136,35 @@ export function fmtRelative(iso) {
 }
 
 export const isoDay = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+/* ---------- Skalning ---------- */
+
+const FINE_UNITS = new Set(['dl', 'l', 'liter', 'cl', 'msk', 'tsk', 'krm']);
+const WEIGHT_UNITS = new Set(['g', 'gram', 'ml', 'mg']);
+
+/** Skalar en mängd och avrundar rimligt efter enhet. */
+export function scaleAmount(amount, unit, factor) {
+  if (amount == null || factor === 1) return amount;
+  const v = amount * factor;
+  const u = (unit || '').toLowerCase();
+  const step = (x, s) => Math.max(s, Math.round(x / s) * s);
+  if (WEIGHT_UNITS.has(u)) return v >= 100 ? step(v, 5) : v >= 10 ? Math.round(v) : step(v, 0.5);
+  if (FINE_UNITS.has(u)) return step(v, 0.25);
+  if (u === 'kg' || u === 'hg') return step(v, 0.1);
+  return v >= 3 ? Math.round(v) : step(v, 0.5);
+}
+
+/** Första talet i t.ex. "4 portioner" → 4 (annars null). */
+export function servingsNumber(text) {
+  const m = String(text || '').match(/\d+(?:[.,]\d+)?/);
+  return m ? parseFloat(m[0].replace(',', '.')) : null;
+}
+
+/** "4 portioner" ×1,5 → "6 portioner". Text utan tal lämnas orörd. */
+export function scaleServings(text, factor) {
+  if (!text || factor === 1) return text;
+  return String(text).replace(/\d+(?:[.,]\d+)?/, m => fmtAmount(Math.round(parseFloat(m.replace(',', '.')) * factor * 2) / 2));
+}
+
+/** 1.5 → "1½", 2 → "2" (för visning av skalfaktor). */
+export const fmtFactor = f => fmtAmount(Math.round(f * 100) / 100);

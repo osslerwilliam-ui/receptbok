@@ -6,6 +6,7 @@ import { fmtDate, fmtAmount } from '../format.js';
 import { emptyState } from '../components.js';
 import { ingredientsHtml, stepsHtml, testlogsHtml, testLogSheet, avgText } from '../recipe-parts.js';
 import { diffIngredients, diffSteps, diffMeta } from '../diff.js';
+import { hydrate, wirePhotoClicks } from '../photos.js';
 import { navigate, back } from '../router.js';
 
 const appbar = title => `
@@ -21,7 +22,9 @@ export function render(root, params, ctx, { view }) {
     if (view === 'history') drawHistory(root, params[0]);
     else if (view === 'version') drawVersion(root, params[0], params[1]);
     else drawCompare(root, params[0], params[1], params[2]);
+    hydrate(root);
   };
+  wirePhotoClicks(root);
   draw();
   const off = onChange(() => { if (root.isConnected) draw(); });
 
@@ -47,7 +50,7 @@ function drawHistory(root, id) {
   root.innerHTML = `${appbar('Historik')}
     <div class="page">
       <header class="page-head">
-        <h1 class="page-title">${esc(displayTitle(b.recipe))}</h1>
+        <h1 class="page-title">${esc(displayTitle(b.recipe))}${b.variants.length > 1 ? ` <span class="title-variant">– ${esc(b.variant.name)}</span>` : ''}</h1>
         <p class="page-sub">${versions.length} ${versions.length === 1 ? 'version' : 'versioner'} · ${b.variant.status === 'locked' ? 'klart (låst)' : 'under utveckling'}</p>
       </header>
       ${versions.length > 1 ? `<button type="button" class="btn btn-quiet btn-wide compare-btn" data-action="compare">${icon('arrow-up-down')}Jämför två versioner</button>` : ''}
