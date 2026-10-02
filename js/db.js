@@ -4,7 +4,7 @@
 // Datamodellens version (schemaVersion) sparas i meta-tabellen och hanteras i migrate.js.
 
 const DB_NAME = 'receptbok';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // 2: tabell för foton
 
 export const STORES = ['chapters', 'recipes', 'variants', 'versions', 'testlogs'];
 
@@ -20,6 +20,8 @@ export function openDB() {
           if (!db.objectStoreNames.contains(name)) db.createObjectStore(name, { keyPath: 'id' });
         }
         if (!db.objectStoreNames.contains('meta')) db.createObjectStore('meta', { keyPath: 'key' });
+        // Foton ligger i en egen tabell och läses bara när de ska visas (de är stora).
+        if (!db.objectStoreNames.contains('photos')) db.createObjectStore('photos', { keyPath: 'id' });
       };
       req.onsuccess = () => {
         const db = req.result;
@@ -96,4 +98,62 @@ export async function setMeta(key, value) {
   const tx = db.transaction('meta', 'readwrite');
   tx.objectStore('meta').put({ key, value });
   return done(tx);
+}
+
+/* ---------- Foton ---------- */
+// Ett foto: { id, testlogId, blob, type, width, height, createdAt }
+
+export async function putPhotos(photos) {
+  if (!photos.length) return;
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readwrite');
+  for (const ph of photos) tx.objectStore('photos').put(ph);
+  return done(tx);
+}
+
+export async function getPhoto(id) {
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readonly');
+  const req = tx.objectStore('photos').get(id);
+  await done(tx);
+  return req.result || null;
+}
+
+export async function getAllPhotos() {
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readonly');
+  const req = tx.objectStore('photos').getAll();
+  await done(tx);
+  return req.result;
+}
+
+export async function deletePhotos(ids) {
+  if (!ids.length) return;
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readwrite');
+  for (const id of ids) tx.objectStore('photos').delete(id);
+  return done(tx);
+}
+
+export async function clearPhotos() {
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readwrite');
+  tx.objectStore('photos').clear();
+  return done(tx);
+}
+
+/** Tar bort foton som inte hör till någon testlogg längre (t.ex. efter borttagning). */
+export async function deleteOrphanPhotos(validTestlogIds) {
+  const db = await openDB();
+  const tx = db.transaction('photos', 'readwrite');
+  const store = tx.objectStore('photos');
+  let removed = 0;
+  store.openCursor().onsuccess = e => {
+    const cur = e.target.result;
+    if (!cur) return;
+    if (!validTestlogIds.has(cur.value.testlogId)) { cur.delete(); removed++; }
+    cur.continue();
+  };
+  await done(tx);
+  return removed;
 }

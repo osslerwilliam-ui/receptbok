@@ -34,7 +34,7 @@ Efter det publiceras varje ändring som hamnar i `main` automatiskt inom några 
 Recepten finns **bara på telefonen**. Om du byter telefon, avinstallerar appen eller rensar Chromes webbplatsdata försvinner de. Gör därför backup ibland:
 
 1. Öppna appen och tryck på **kugghjulet** uppe till höger på startsidan.
-2. Tryck **Exportera backup**. En fil som heter `receptbok-backup-ÅÅÅÅ-MM-DD.json` sparas i *Hämtade filer* (Downloads).
+2. Tryck **Exportera backup**. Har du foton i testloggarna får du välja *Med foton* (större fil) eller *Utan foton*. En fil som heter `receptbok-backup-ÅÅÅÅ-MM-DD.json` sparas i *Hämtade filer* (Downloads).
 3. Spara gärna filen någon annanstans också, t.ex. i Google Drive eller som bilaga i ett mejl till dig själv.
 
 Appen påminner dig på startsidan om det gått mer än 30 dagar sedan senaste backup.
@@ -53,16 +53,24 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Redigera:** överst namn, kapitel och taggar. Därunder växlar du mellan flikarna *Ingredienser* och *Instruktioner*. Håll fingret på **⋮** till höger om en rad och dra för att flytta den, eller tryck kort på **⋮** för att flytta upp/ned eller ta bort.
 - **Klistra in:** under Ingredienser och Instruktioner finns *Klistra in*. Klistra in flera rader på en gång, t.ex. `500 g vetemjöl`. En rad som slutar med kolon (`Deg:`) blir en grupp.
 - **Receptvyn:** växla mellan *Ingredienser* och *Instruktioner*. Tryck på en rad för att bocka av den. Avbockningarna nollställs när du lämnar receptet.
+- **Skala:** tryck *Skala* under receptets titel för att tillfälligt ändra mängderna (½×, 1½×, 2× …, eget tal eller antal portioner). Gäller även kokläget och delning, och nollställs när du lämnar receptet.
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
 - **Ljust eller mörkt läge:** kugghjulet → *Utseende* → Som telefonen, Ljust eller Mörkt.
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
+### Varianter
+
+Ett recept kan ha flera varianter, t.ex. *Standard*, *Stor form* och *Med frön*. De visas som knappar under titeln – tryck för att byta.
+
+- **Ny variant:** **⋮** → *Ny variant*. Ge den ett namn och välj vilken version den ska utgå från. Varianten blir en egen kopia med egna versioner och tester (ändringar i en variant påverkar inte de andra).
+- **Byt namn, visa först eller ta bort:** **⋮** → *Variant ”…”*. Den sista varianten kan inte tas bort.
+
 ### Utveckla recept (versioner och tester)
 
 Ett recept är antingen **under utveckling** (gulaktig anteckningsblockston, märket *Under utveckling · v3*) eller **klart (låst)**.
 
-- **Logga test:** efter att du lagat receptet – datum, betyg 1–5 och en kommentar. Testerna syns längst ner i receptet och det senaste högst upp. Tryck på ett test för att ändra eller ta bort det.
+- **Logga test:** efter att du lagat receptet – datum, betyg 1–5, en kommentar och gärna foton (kamera eller galleri). Testerna syns längst ner i receptet och det senaste högst upp. Tryck på ett test för att ändra eller ta bort det.
 - **Ny version:** kopierar receptet till nästa version (t.ex. v4) och fryser den förra. Medan du redigerar ser du testerna från förra versionen och fyller i *Vad ändrade du?*. Ändrar du ingenting sparas ingen ny version.
 - **Lås – markera som klart:** via **⋮**. Då visas bara ingredienser och instruktioner.
 - **Lås upp:** via **⋮** på ett klart recept. Receptet blir under utveckling igen och du fortsätter på den senaste versionen – ingen ny version skapas. Vill du ha en ny version trycker du *Ny version*.

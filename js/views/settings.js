@@ -2,7 +2,7 @@
 
 import { icon, esc, $, sheet, confirmSheet, snack } from '../ui.js';
 import { state, meta } from '../store.js';
-import { exportBackup, parseBackup, importBackup, buildBackup, downloadJSON } from '../backup.js';
+import { exportBackup, parseBackup, importBackup, buildBackup, downloadJSON, photosSize } from '../backup.js';
 import { fmtDate, isoDay } from '../format.js';
 import { back } from '../router.js';
 import { getTheme, setTheme } from '../theme.js';
@@ -70,7 +70,7 @@ export function render(root) {
     try { parsed = parseBackup(await file.text()); } catch (err) { snack(err.message, { duration: 7000 }); return; }
     const mode = await sheet({
       title: 'Importera backup',
-      body: `<p class="sheet-text">Backupen innehåller ${parsed.counts.recipes} recept och ${parsed.counts.chapters} kapitel${parsed.exportedAt ? ` och skapades ${esc(fmtDate(parsed.exportedAt))}` : ''}.</p>
+      body: `<p class="sheet-text">Backupen innehåller ${parsed.counts.recipes} recept, ${parsed.counts.chapters} kapitel och ${parsed.counts.photos} foton${parsed.exportedAt ? ` och skapades ${esc(fmtDate(parsed.exportedAt))}` : ''}.</p>
         <p class="sheet-text"><b>Slå ihop</b> lägger till det som saknas och behåller det senast ändrade. <b>Ersätt allt</b> tar bort allt som finns i appen nu.</p>`,
       actions: [
         { label: 'Avbryt', value: null },
@@ -86,7 +86,7 @@ export function render(root) {
     })) return;
     try {
       // Säkerhetskopia av nuvarande innehåll innan det ersätts.
-      if (mode === 'replace' && state.recipes.size) downloadJSON(buildBackup(), `receptbok-backup-fore-import-${isoDay()}.json`);
+      if (mode === 'replace' && state.recipes.size) await exportBackup({ photos: true, filename: `receptbok-backup-fore-import-${isoDay()}.json`, remember: false });
       await importBackup(parsed, mode);
       snack(mode === 'replace' ? 'Backupen är importerad' : 'Backupen är sammanslagen');
       render(root);
@@ -108,7 +108,24 @@ export function render(root) {
     const a = btn.dataset.action;
     if (a === 'back') back();
     else if (a === 'export') {
-      meta.lastExportAt = await exportBackup();
+      const { count, bytes } = await photosSize();
+      let photos = false;
+      if (count) {
+        const mbNum = bytes * 1.37 / 1048576;
+        const mb = mbNum < 0.1 ? 'under 0,1' : mbNum.toFixed(1).replace('.', ',');
+        const choice = await sheet({
+          title: 'Exportera backup',
+          body: `<p class="sheet-text">Du har ${count} ${count === 1 ? 'foto' : 'foton'} i testloggarna. Med foton blir filen ungefär ${mb} MB.</p>`,
+          actions: [
+            { label: 'Utan foton', value: 'without' },
+            { label: 'Med foton', value: 'with', kind: 'primary' },
+          ],
+        });
+        if (!choice) return;
+        photos = choice === 'with';
+      }
+      btn.disabled = true;
+      try { meta.lastExportAt = await exportBackup({ photos }); } finally { btn.disabled = false; }
       drawLast();
       snack('Backupen är sparad i Hämtade filer');
     } else if (a === 'import') fileInput.click();

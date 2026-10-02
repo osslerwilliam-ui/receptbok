@@ -7,6 +7,7 @@ const ROUTES = [
   [/^\/kapitel\/([^/]+)$/, 'chapter'],
   [/^\/recept\/([^/]+)$/, 'recipe'],
   [/^\/recept\/([^/]+)\/kok$/, 'cook'],
+  [/^\/recept\/([^/]+)\/v\/([^/]+)$/, 'recipe'],
   [/^\/recept\/([^/]+)\/redigera$/, 'edit'],
   [/^\/recept\/([^/]+)\/rattning$/, 'fix'],
   [/^\/recept\/([^/]+)\/historik$/, 'history'],

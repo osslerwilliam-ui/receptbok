@@ -396,7 +396,8 @@ select.input { -webkit-appearance: none; appearance: none; padding-right: 32px;
   display: grid; gap: 4px; text-align: left; width: 100%; border: 0; font-size: var(--fs-sm);
   padding: var(--sp-3) var(--sp-4); border-radius: var(--radius-sm); background: var(--surface); color: var(--text);
 }
-button.log:active { background: var(--surface-2); }
+.log-main { display: grid; gap: 4px; text-align: left; width: 100%; border: 0; background: none; padding: 0; color: inherit; font: inherit; }
+button.log-main:active { opacity: .7; }
 .log-head { display: flex; justify-content: space-between; gap: var(--sp-2); font-size: var(--fs-xs); color: var(--text-muted); font-weight: 600; }
 .log-text { overflow-wrap: break-word; white-space: pre-line; }
 .log-empty { font-size: var(--fs-sm); margin: 0; }
@@ -453,3 +454,42 @@ ol.dlist { counter-reset: d; }
 .d-tag { font-weight: 600; margin-right: var(--sp-2); }
 .d-row del { display: block; color: var(--text-muted); text-decoration-color: var(--diff-rem); }
 .d-row ins { display: block; text-decoration: none; }
+
+/* ---------- Fas 3: varianter, skalning, foton ---------- */
+.variant-chips { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-1) 0; }
+.vchip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 40px; padding: 0 var(--sp-4);
+  border: 0; border-radius: 999px; background: var(--surface-2); color: var(--text-muted); font-weight: 600; font-size: var(--fs-sm);
+  transition: background var(--dur), color var(--dur);
+}
+.is-dev .vchip { background: var(--dev-line); }
+.vchip.on { background: var(--text); color: var(--bg); }
+.vchip-dev { display: inline-flex; color: var(--dev-ink); }
+.vchip.on .vchip-dev { color: inherit; opacity: .8; }
+.vchip-dev .icon { width: 13px; height: 13px; }
+.title-variant { font-style: italic; font-weight: 500; color: var(--text-muted); }
+.edit-variant { margin: 0 0 var(--sp-2); font-size: var(--fs-sm); color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+.edit-variant b { color: var(--text); }
+
+.scale-chip {
+  display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--sp-3);
+  border: 1.5px solid var(--line); border-radius: 999px; background: none; color: var(--text-muted); font-size: var(--fs-sm); font-weight: 600;
+}
+.scale-chip .icon { width: 15px; height: 15px; }
+.scale-chip.on { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-strong); }
+.ing .amt.scaled { color: var(--accent-strong); }
+.stepper { display: flex; align-items: center; gap: var(--sp-3); }
+.stepper .icon-btn { background: var(--surface-2); font-size: 1.5rem; font-weight: 600; }
+.stepper-val { font: 600 var(--fs-xl)/1 var(--font-serif); min-width: 2.5em; text-align: center; font-variant-numeric: tabular-nums; }
+.choice-wrap { grid-template-columns: repeat(5, 1fr); border-radius: var(--radius-sm); }
+.choice-wrap button { border-radius: 8px; }
+
+.thumbs { display: flex; flex-wrap: wrap; gap: 6px; margin-top: var(--sp-2); }
+.thumb { position: relative; width: 72px; height: 72px; border-radius: 10px; overflow: hidden; border: 0; padding: 0; background: var(--surface-2); flex: none; }
+.thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.thumb-del { position: absolute; top: 2px; right: 2px; width: 28px; height: 28px; border-radius: 50%; border: 0; display: grid; place-items: center; background: rgb(0 0 0 / .55); color: #fff; }
+.thumb-del .icon { width: 16px; height: 16px; }
+.add-photo { display: grid; place-items: center; align-content: center; gap: 2px; cursor: pointer; color: var(--text-muted); font-size: var(--fs-xs); font-weight: 600; border: 1.5px dashed var(--line); background: none; }
+.add-photo .icon { width: 20px; height: 20px; }
+.photo-edit.busy { opacity: .5; pointer-events: none; }
+.photo-full { width: 100%; max-height: 72dvh; object-fit: contain; border-radius: var(--radius-sm); display: block; background: var(--surface-2); }

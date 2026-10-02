@@ -97,6 +97,8 @@ async function boot() {
 
   // Förladda övriga vyer när appen är ledig, så att de öppnas direkt.
   const preload = () => {
+    // Städa bort foton från testloggar som tagits bort.
+    db.deleteOrphanPhotos(new Set(data.testlogs.map(l => l.id))).catch(() => {});
     ['chapter', 'recipe', 'edit', 'settings', 'history'].forEach(n => views[n]().catch(() => {}));
     import('./search.js').then(m => m.search('')); // bygger sökindexet i förväg
   };

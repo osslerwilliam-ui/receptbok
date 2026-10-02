@@ -110,12 +110,19 @@ export function variantsOf(recipeId) {
   return [...state.variants.values()].filter(v => v.recipeId === recipeId).sort((a, b) => a.sortOrder - b.sortOrder);
 }
 
-/** Receptet med standardvariant och dess aktuella version. */
-export function bundle(recipeId) {
+/* Vald variant per recept medan man är inne i receptet (sparas inte). */
+const selected = new Map();
+export function selectVariant(recipeId, variantId) { selected.set(recipeId, variantId); }
+export function clearVariantSelection(recipeId) { selected.delete(recipeId); }
+
+/** Receptet med vald variant (annars standardvarianten) och dess aktuella version. */
+export function bundle(recipeId, variantId = null) {
   const recipe = state.recipes.get(recipeId);
   if (!recipe) return null;
   const variants = variantsOf(recipeId);
-  const variant = state.variants.get(recipe.defaultVariantId) || variants[0];
+  const wanted = variantId || selected.get(recipeId);
+  const variant = (wanted && state.variants.get(wanted)?.recipeId === recipeId && state.variants.get(wanted))
+    || state.variants.get(recipe.defaultVariantId) || variants[0];
   const version = variant && state.versions.get(variant.currentVersionId);
   if (!variant || !version) return null;
   return { recipe, variant, version, variants };
@@ -308,9 +315,9 @@ export function fixVersion(versionId, patch) {
   return updateVersion(versionId, patch);
 }
 
-export function addTestLog(versionId, { date, rating = null, text = '' }) {
+export function addTestLog(versionId, { id = uuid(), date, rating = null, text = '', photos = [] }) {
   const t = now();
-  const log = { id: uuid(), versionId, date, rating, text, createdAt: t, updatedAt: t };
+  const log = { id, versionId, date, rating, text, photos, createdAt: t, updatedAt: t };
   commit([{ store: 'testlogs', put: log }]);
   return log;
 }
@@ -326,4 +333,53 @@ export function deleteTestLog(id) {
   if (!l) return null;
   commit([{ store: 'testlogs', del: id }]);
   return l;
+}
+
+/* ---------- Varianter (Fas 3) ---------- */
+
+/** Skapar en variant genom att kopiera en version (från valfri variant). Den nya varianten börjar som v1 under utveckling. */
+export function createVariant(recipeId, fromVersionId, name) {
+  const from = state.versions.get(fromVersionId);
+  const t = now();
+  const list = variantsOf(recipeId);
+  const variant = {
+    id: uuid(), recipeId, name: name.trim() || 'Ny variant', status: 'development', currentVersionId: null,
+    sortOrder: list.length ? list[list.length - 1].sortOrder + 1 : 0, createdAt: t, updatedAt: t,
+  };
+  const ver = copyVersion(from, variant.id, 1, t);
+  variant.currentVersionId = ver.id;
+  commit([{ store: 'variants', put: variant }, { store: 'versions', put: ver }]);
+  return variant;
+}
+
+export function renameVariant(variantId, name) {
+  const v = state.variants.get(variantId);
+  if (!v) return;
+  commit([{ store: 'variants', put: { ...v, name: name.trim() || v.name, updatedAt: now() } }]);
+}
+
+export function setDefaultVariant(recipeId, variantId) {
+  updateRecipe(recipeId, { defaultVariantId: variantId });
+}
+
+/** Tar bort en variant med versioner och testloggar. Returnerar det som behövs för att ångra. */
+export function deleteVariant(variantId) {
+  const variant = state.variants.get(variantId);
+  if (!variant) return null;
+  const recipe = state.recipes.get(variant.recipeId);
+  const others = variantsOf(variant.recipeId).filter(v => v.id !== variantId);
+  if (!others.length) return null; // sista varianten tas inte bort
+  const versions = versionsOf(variantId);
+  const verIds = new Set(versions.map(v => v.id));
+  const testlogs = [...state.testlogs.values()].filter(l => verIds.has(l.versionId));
+  const ops = [
+    { store: 'variants', del: variantId },
+    ...versions.map(v => ({ store: 'versions', del: v.id })),
+    ...testlogs.map(l => ({ store: 'testlogs', del: l.id })),
+  ];
+  const removed = { variants: [variant], versions, testlogs, recipes: [recipe] };
+  if (recipe.defaultVariantId === variantId) ops.push({ store: 'recipes', put: { ...recipe, defaultVariantId: others[0].id, updatedAt: now() } });
+  if (selected.get(variant.recipeId) === variantId) selected.delete(variant.recipeId);
+  commit(ops);
+  return removed;
 }

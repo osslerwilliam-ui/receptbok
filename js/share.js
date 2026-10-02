@@ -4,7 +4,7 @@ import { shareText } from './format.js';
 import { displayTitle } from './store.js';
 import { snack } from './ui.js';
 
-export async function shareRecipe({ recipe, variant, version, variants }) {
+export async function shareRecipe({ recipe, variant, version, variants }, { scale = 1 } = {}) {
   const title = displayTitle(recipe);
   const text = shareText({
     title,
@@ -12,6 +12,7 @@ export async function shareRecipe({ recipe, variant, version, variants }) {
     servings: version.servings,
     ingredients: version.ingredients,
     steps: version.steps,
+    scale,
   });
   if (navigator.share) {
     try {

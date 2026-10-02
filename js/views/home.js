@@ -1,7 +1,7 @@
 // Startsida: sök, kapitel, senast visade och under utveckling.
 
 import { icon, esc, $, sheet } from '../ui.js';
-import { state, meta, bundle, testlogsOf, chaptersSorted, createChapter, createRecipe, reorderChapters, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
+import { state, meta, testlogsOf, variantsOf, displayTitle, chaptersSorted, createChapter, createRecipe, reorderChapters, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
 import { search } from '../search.js';
 import { fmtRelative, fmtDate } from '../format.js';
 import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar } from '../components.js';
@@ -109,11 +109,16 @@ function renderBrowse(el) {
 
   const dev = recipes.filter(r => isInDevelopment(r.id));
   if (dev.length) {
-    html += `<h2 class="section-title">Under utveckling</h2><div class="rlist">${dev.map(r => {
-      const b = bundle(r.id);
-      const last = b && testlogsOf(b.version.id)[0];
-      const sub = [esc(chapterOf(r)?.name || 'Utan kapitel'), b ? `v${b.version.number}` : '', last ? `testad ${fmtDate(last.date)}` : 'inte testad än'].filter(Boolean).join(' · ');
-      return recipeRow(r, { sub });
+    // En rad per variant som är under utveckling.
+    html += `<h2 class="section-title">Under utveckling</h2><div class="rlist">${dev.flatMap(r => {
+      const vs = variantsOf(r.id);
+      return vs.filter(v => v.status === 'development').map(v => {
+        const ver = state.versions.get(v.currentVersionId);
+        const last = ver && testlogsOf(ver.id)[0];
+        const sub = [esc(chapterOf(r)?.name || 'Utan kapitel'), ver ? `v${ver.number}` : '', last ? `testad ${fmtDate(last.date)}` : 'inte testad än'].filter(Boolean).join(' · ');
+        const title = vs.length > 1 ? `${esc(displayTitle(r))} <span class="title-variant">– ${esc(v.name)}</span>` : undefined;
+        return recipeRow(r, { sub, titleHtml: title, path: vs.length > 1 ? `/recept/${r.id}/v/${v.id}` : null });
+      });
     }).join('')}</div>`;
   }
   el.innerHTML = html;
