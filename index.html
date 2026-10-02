@@ -7,6 +7,16 @@
 <meta name="description" content="Personlig receptbok som fungerar offline.">
 <meta name="theme-color" content="#f5efe4" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#1c1714" media="(prefers-color-scheme: dark)">
+<script>
+  // Valt färgläge (se js/theme.js) sätts innan sidan ritas, så att den inte blinkar.
+  try {
+    var t = localStorage.getItem('receptbok-tema');
+    if (t === 'light' || t === 'dark') {
+      document.documentElement.dataset.theme = t;
+      document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) { m.content = t === 'dark' ? '#1c1714' : '#f5efe4'; });
+    }
+  } catch (e) {}
+</script>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" href="icons/favicon.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">

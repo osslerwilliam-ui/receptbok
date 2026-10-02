@@ -91,6 +91,7 @@ export function sheet({ title = '', body = '', actions = [], onOpen } = {}) {
         if (closed) return;
         closed = true;
         stack.splice(stack.indexOf(entry), 1);
+        document.removeEventListener('keydown', onKey);
         wrap.classList.remove('open');
         wrap.classList.add('closing');
         setTimeout(() => wrap.remove(), 200);
@@ -111,7 +112,8 @@ export function sheet({ title = '', body = '', actions = [], onOpen } = {}) {
         else close(a.value);
       };
     });
-    wrap.addEventListener('keydown', e => { if (e.key === 'Escape') close(null); });
+    const onKey = e => { if (e.key === 'Escape') close(null); };
+    document.addEventListener('keydown', onKey);
     requestAnimationFrame(() => wrap.classList.add('open'));
     onOpen?.(wrap, close);
   });

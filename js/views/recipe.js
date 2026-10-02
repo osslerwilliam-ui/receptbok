@@ -22,6 +22,11 @@ export function render(root, [id], ctx, { cook = false } = {}) {
     return;
   }
   const { recipe, version } = b;
+  // Avbockningar finns kvar bara när man växlar mellan receptet och kokläget.
+  // Lämnar man receptet börjar man om nästa gång.
+  const prev = ctx.prev;
+  const samePair = prev && (prev.name === 'recipe' || prev.name === 'cook') && prev.params[0] === id;
+  if (!samePair) temp.delete(id);
   const t = tempFor(id);
   if (!cook) markViewed(id);
 
@@ -84,8 +89,7 @@ export function render(root, [id], ctx, { cook = false } = {}) {
       ${cook
         ? `<button type="button" class="btn btn-quiet exit-cook" data-action="back">${icon('x')}Avsluta kokläge</button>`
         : (ingredients.length || steps.length ? `<div class="recipe-actions">
-            <a class="btn btn-primary" href="#/recept/${id}/kok" data-link>${icon('chef-hat')}Kokläge</a>
-            <button type="button" class="btn btn-quiet" data-action="share">${icon('share-2')}Dela</button>
+            <a class="btn btn-primary btn-wide" href="#/recept/${id}/kok" data-link>${icon('chef-hat')}Kokläge</a>
           </div>` : '')}
     </article>`;
 

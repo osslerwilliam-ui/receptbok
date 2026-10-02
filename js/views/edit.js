@@ -5,6 +5,7 @@ import { state, bundle, chaptersSorted, saveRecipeAndVersion, deleteRecipe, uuid
 import { fmtAmount, parseAmount, parseIngredientLine, parseStepLines, UNITS } from '../format.js';
 import { emptyState } from '../components.js';
 import { navigate, back } from '../router.js';
+import { enableDragSort } from '../dragsort.js';
 
 /** Platt lista med grupprubriker → redigeringsrader. */
 function toItems(list, kind, map) {
@@ -32,6 +33,7 @@ function fromItems(items, kind, map) {
 }
 
 export function render(root, [id]) {
+  let editTab = 'ing';
   const b = bundle(id);
   if (!b) {
     root.innerHTML = `<div class="page">${emptyState({ title: 'Receptet finns inte längre', button: `<a class="btn btn-primary" href="#/" data-link>Till startsidan</a>` })}</div>`;
@@ -78,24 +80,30 @@ export function render(root, [id]) {
       <label class="field"><span class="field-label">Taggar <span class="opt">(valfritt, skilj med komma)</span></span>
         <input id="f-tags" class="input" type="text" placeholder="t.ex. vegetariskt, snabbt" value="${esc(form.tags)}" data-f="tags" autocomplete="off"></label>
 
-      <section class="ed-section">
-        <h2 class="ed-heading">Ingredienser</h2>
+      <div class="seg ed-tabs" role="tablist" data-tab="${editTab}">
+        <span class="pill" aria-hidden="true"></span>
+        <button type="button" role="tab" id="etab-ing" data-etab="ing" aria-controls="epanel-ing" aria-selected="${editTab === 'ing'}">Ingredienser</button>
+        <button type="button" role="tab" id="etab-steps" data-etab="steps" aria-controls="epanel-steps" aria-selected="${editTab === 'steps'}">Instruktioner</button>
+      </div>
+
+      <section class="ed-section" id="epanel-ing" role="tabpanel" aria-labelledby="etab-ing" data-epanel="ing" ${editTab === 'ing' ? '' : 'hidden'}>
         <div class="ed-list" id="ing-list"></div>
         <div class="ed-add">
           <button type="button" class="btn btn-quiet btn-small" data-action="add-ing">${icon('plus')}Ingrediens</button>
-          <button type="button" class="btn btn-quiet btn-small" data-action="add-ing-group">${icon('heading')}Grupp</button>
+          <button type="button" class="btn btn-quiet btn-small" data-action="add-ing-group">${icon('plus')}Grupp</button>
           <button type="button" class="btn btn-quiet btn-small" data-action="paste-ing">${icon('clipboard-paste')}Klistra in</button>
         </div>
+        <p class="ed-hint">Håll fingret på ${icon('ellipsis-vertical', 'inline-icon')} och dra för att flytta en rad.</p>
       </section>
 
-      <section class="ed-section">
-        <h2 class="ed-heading">Instruktioner</h2>
+      <section class="ed-section" id="epanel-steps" role="tabpanel" aria-labelledby="etab-steps" data-epanel="steps" ${editTab === 'steps' ? '' : 'hidden'}>
         <div class="ed-list" id="step-list"></div>
         <div class="ed-add">
           <button type="button" class="btn btn-quiet btn-small" data-action="add-step">${icon('plus')}Steg</button>
-          <button type="button" class="btn btn-quiet btn-small" data-action="add-step-group">${icon('heading')}Grupp</button>
+          <button type="button" class="btn btn-quiet btn-small" data-action="add-step-group">${icon('plus')}Grupp</button>
           <button type="button" class="btn btn-quiet btn-small" data-action="paste-step">${icon('clipboard-paste')}Klistra in</button>
         </div>
+        <p class="ed-hint">Håll fingret på ${icon('ellipsis-vertical', 'inline-icon')} och dra för att flytta ett steg.</p>
       </section>
       <datalist id="units">${UNITS.map(u => `<option value="${u}">`).join('')}</datalist>
     </div>`;
@@ -126,11 +134,10 @@ export function render(root, [id]) {
   };
 
   /* ---------- Rader ---------- */
-  const rowMenuBtn = (list, i) => `<button type="button" class="icon-btn ed-menu" data-op="menu" data-list="${list}" data-i="${i}" aria-label="Flytta eller ta bort">${icon('ellipsis-vertical')}</button>`;
+  const rowMenuBtn = (list, i) => `<button type="button" class="icon-btn ed-menu" data-op="menu" data-list="${list}" data-i="${i}" aria-label="Flytta eller ta bort (håll och dra för att flytta)">${icon('ellipsis-vertical')}</button>`;
 
   const groupRow = (it, i, list) => `
     <div class="ed-row ed-group" data-i="${i}">
-      ${icon('heading', 'ed-group-icon')}
       <input class="input ed-group-name" type="text" value="${esc(it.name)}" placeholder="Gruppnamn, t.ex. Deg" data-k="name" aria-label="Gruppnamn">
       ${rowMenuBtn(list, i)}
     </div>`;
@@ -160,6 +167,14 @@ export function render(root, [id]) {
 
   drawIngs();
   drawSteps();
+  const move = (items, draw) => (from, to) => {
+    const [it] = items.splice(from, 1);
+    items.splice(to, 0, it);
+    draw();
+    changed();
+  };
+  enableDragSort(ingList, { rowSel: '.ed-row', handleSel: '.ed-menu', onMove: (f, t) => move(ings, drawIngs)(f, t) });
+  enableDragSort(stepList, { rowSel: '.ed-row', handleSel: '.ed-menu', onMove: (f, t) => move(steps, drawSteps)(f, t) });
   // Mät textfältens höjd först när vyn finns på sidan.
   requestAnimationFrame(() => $$('textarea', root).forEach(autoGrow));
   document.fonts?.ready.then(() => $$('textarea', root).forEach(autoGrow));
@@ -208,6 +223,16 @@ export function render(root, [id]) {
   });
 
   root.addEventListener('click', async e => {
+    const tabBtn = e.target.closest('[data-etab]');
+    if (tabBtn) {
+      editTab = tabBtn.dataset.etab;
+      const seg = tabBtn.parentElement;
+      seg.dataset.tab = editTab;
+      $$('[data-etab]', seg).forEach(b => b.setAttribute('aria-selected', b === tabBtn));
+      $$('[data-epanel]', root).forEach(p => { p.hidden = p.dataset.epanel !== editTab; });
+      if (editTab === 'steps') $$('textarea', stepList).forEach(autoGrow);
+      return;
+    }
     const btn = e.target.closest('[data-action], [data-op]');
     if (!btn) return;
     const a = btn.dataset.action;
