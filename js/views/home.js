@@ -1,9 +1,9 @@
 // Startsida: sök, kapitel, senast visade och under utveckling.
 
 import { icon, esc, $, sheet } from '../ui.js';
-import { state, meta, chaptersSorted, createChapter, createRecipe, reorderChapters, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
+import { state, meta, bundle, testlogsOf, chaptersSorted, createChapter, createRecipe, reorderChapters, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
 import { search } from '../search.js';
-import { fmtRelative } from '../format.js';
+import { fmtRelative, fmtDate } from '../format.js';
 import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar } from '../components.js';
 import { navigate } from '../router.js';
 
@@ -109,8 +109,12 @@ function renderBrowse(el) {
 
   const dev = recipes.filter(r => isInDevelopment(r.id));
   if (dev.length) {
-    html += `<h2 class="section-title">Under utveckling</h2><div class="rlist">${dev.map(r =>
-      recipeRow(r, { sub: esc(chapterOf(r)?.name || 'Utan kapitel') })).join('')}</div>`;
+    html += `<h2 class="section-title">Under utveckling</h2><div class="rlist">${dev.map(r => {
+      const b = bundle(r.id);
+      const last = b && testlogsOf(b.version.id)[0];
+      const sub = [esc(chapterOf(r)?.name || 'Utan kapitel'), b ? `v${b.version.number}` : '', last ? `testad ${fmtDate(last.date)}` : 'inte testad än'].filter(Boolean).join(' · ');
+      return recipeRow(r, { sub });
+    }).join('')}</div>`;
   }
   el.innerHTML = html;
 }

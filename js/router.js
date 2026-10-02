@@ -8,6 +8,10 @@ const ROUTES = [
   [/^\/recept\/([^/]+)$/, 'recipe'],
   [/^\/recept\/([^/]+)\/kok$/, 'cook'],
   [/^\/recept\/([^/]+)\/redigera$/, 'edit'],
+  [/^\/recept\/([^/]+)\/rattning$/, 'fix'],
+  [/^\/recept\/([^/]+)\/historik$/, 'history'],
+  [/^\/recept\/([^/]+)\/version\/([^/]+)$/, 'version'],
+  [/^\/recept\/([^/]+)\/jamfor\/([^/]+)\/([^/]+)$/, 'compare'],
   [/^\/installningar$/, 'settings'],
 ];
 

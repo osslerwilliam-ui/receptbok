@@ -38,6 +38,12 @@
   --success: #5e7a3a;
   --snack-action: #f0a07f;
   --danger: #a8322a;
+  --diff-add: #4f6f2a;
+  --diff-add-bg: #e6edd3;
+  --diff-rem: #a8322a;
+  --diff-rem-bg: #f6dcd6;
+  --diff-chg: #7d6111;
+  --diff-chg-bg: #f3e7bd;
   --shadow: 0 1px 2px rgb(70 45 25 / .06), 0 4px 14px rgb(70 45 25 / .06);
 
   /* "Under utveckling": anteckningsblock */
@@ -98,6 +104,12 @@
     --success: #9db86b;
     --snack-action: #a8441f;
     --danger: #f08b7c;
+    --diff-add: #b4cc82;
+    --diff-add-bg: #2e3520;
+    --diff-rem: #f08b7c;
+    --diff-rem-bg: #44241f;
+    --diff-chg: #dcb75a;
+    --diff-chg-bg: #3d3220;
     --shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px rgb(0 0 0 / .2);
     --dev-bg: #29231a;
     --dev-line: #3a311f;
@@ -126,6 +138,12 @@
   --success: #9db86b;
   --snack-action: #a8441f;
   --danger: #f08b7c;
+  --diff-add: #b4cc82;
+  --diff-add-bg: #2e3520;
+  --diff-rem: #f08b7c;
+  --diff-rem-bg: #44241f;
+  --diff-chg: #dcb75a;
+  --diff-chg-bg: #3d3220;
   --shadow: 0 1px 2px rgb(0 0 0 / .25), 0 4px 14px rgb(0 0 0 / .2);
   --dev-bg: #29231a;
   --dev-line: #3a311f;

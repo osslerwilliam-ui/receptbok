@@ -14,6 +14,10 @@ const views = {
   recipe: () => import('./views/recipe.js'),
   cook: () => import('./views/recipe.js'),
   edit: () => import('./views/edit.js'),
+  fix: () => import('./views/edit.js'),
+  history: () => import('./views/history.js'),
+  version: () => import('./views/history.js'),
+  compare: () => import('./views/history.js'),
   settings: () => import('./views/settings.js'),
 };
 
@@ -35,7 +39,7 @@ async function onRoute(route, ctx) {
     runCleanup();
     const view = document.createElement('div');
     view.className = `view view-${route.name}`;
-    const r = mod.render(view, route.params, { ...ctx, prev: prevRoute }, { cook: route.name === 'cook' });
+    const r = mod.render(view, route.params, { ...ctx, prev: prevRoute }, { cook: route.name === 'cook', fix: route.name === 'fix', view: route.name });
     prevRoute = route;
     cleanup = typeof r === 'function' ? r : null;
     app.replaceChildren(view);
@@ -93,7 +97,7 @@ async function boot() {
 
   // Förladda övriga vyer när appen är ledig, så att de öppnas direkt.
   const preload = () => {
-    ['chapter', 'recipe', 'edit', 'settings'].forEach(n => views[n]().catch(() => {}));
+    ['chapter', 'recipe', 'edit', 'settings', 'history'].forEach(n => views[n]().catch(() => {}));
     import('./search.js').then(m => m.search('')); // bygger sökindexet i förväg
   };
   if ('requestIdleCallback' in window) requestIdleCallback(preload, { timeout: 2000 });
