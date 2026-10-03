@@ -2,9 +2,9 @@
 
 import { icon, esc, $, $$, sheet, menuSheet, confirmSheet, snack } from '../ui.js';
 import { state, onChange, listsActive, listsArchived, createList, updateList, deleteList, restoreList, archiveList, reorderLists, uuid } from '../store.js';
-import { onLongPress } from '../longpress.js';
+import { enableGridSort } from '../gridsort.js';
 import { fmtDate, groupItems, parseStepLines, UNITS } from '../format.js';
-import { emptyState, sortSheet } from '../components.js';
+import { emptyState } from '../components.js';
 import { navigate, back } from '../router.js';
 import * as wakelock from '../wakelock.js';
 
@@ -75,7 +75,7 @@ function listCard(l) {
   const left = remaining(l);
   const total = l.items.length;
   const done = total ? (total - left) / total : 0;
-  return `<a class="list-card${l.pinned ? ' pinned' : ''}" href="#/lista/${l.id}" data-link data-list="${l.id}">
+  return `<a class="list-card${l.pinned ? ' pinned' : ''}" href="#/lista/${l.id}" data-link data-list="${l.id}" data-id="${l.id}">
     <span class="list-title">${esc(l.title || 'Namnlös lista')}</span>
     ${l.subtitle ? `<span class="list-sub">${esc(l.subtitle)}</span>` : ''}
     <span class="list-progress"><span style="width:${Math.round(done * 100)}%"></span></span>
@@ -120,15 +120,13 @@ function renderHome(root) {
   };
   draw();
   const off = onChange(() => { if (root.isConnected) draw(); });
-  // Håll fingret på en lista för att sortera om (fästa och övriga sorteras var för sig).
-  onLongPress(root, '.list-card[data-list]', async el => {
-    const pinned = state.lists.get(el.dataset.list)?.pinned;
-    const group = listsActive().filter(l => !!l.pinned === !!pinned);
-    const ids = await sortSheet({
-      title: pinned ? 'Sortera fästa listor' : 'Sortera listor', marked: el.dataset.list,
-      items: group.map(l => ({ id: l.id, label: l.title || 'Namnlös lista', sub: l.subtitle || '' })),
-    });
-    if (ids) reorderLists([...ids, ...listsActive().filter(l => !!l.pinned !== !!pinned).map(l => l.id)]);
+  // Håll fingret på en lista och dra den till ny plats (fästa och övriga var för sig).
+  const stopSort = enableGridSort(root, {
+    gridSel: '.list-grid', itemSel: '.list-card[data-list]',
+    onDrop(grid, ids) {
+      const moved = new Set(ids);
+      reorderLists([...ids, ...listsActive().filter(l => !moved.has(l.id)).map(l => l.id)]);
+    },
   });
   root.addEventListener('click', async e => {
     const btn = e.target.closest('[data-action]');
@@ -139,7 +137,7 @@ function renderHome(root) {
       if (v) { const l = createList(v); navigate(`/lista/${l.id}/redigera`); } // börja med att lägga in varor
     }
   });
-  return off;
+  return () => { off(); stopSort(); };
 }
 
 /* ---------- Handla-läget ---------- */

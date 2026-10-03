@@ -4,8 +4,8 @@ import { icon, esc, $, sheet } from '../ui.js';
 import { state, meta, testlogsOf, variantsOf, displayTitle, chaptersSorted, createChapter, createRecipe, reorderChapters, favoritesSorted, reorderFavorites, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
 import { search } from '../search.js';
 import { fmtRelative, fmtDate } from '../format.js';
-import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar, sortSheet } from '../components.js';
-import { onLongPress } from '../longpress.js';
+import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar } from '../components.js';
+import { enableGridSort } from '../gridsort.js';
 import { navigate } from '../router.js';
 
 let query = '';
@@ -56,8 +56,6 @@ export function render(root, _params, ctx) {
     if (a === 'new-chapter') {
       const v = await chapterSheet();
       if (v) { createChapter(v); renderBrowse(browse); }
-    } else if (a === 'sort-chapters') {
-      if (await sortChapters()) renderBrowse(browse);
     } else if (a === 'create-from-search') {
       const title = query.trim();
       let chapterId = null;
@@ -72,16 +70,20 @@ export function render(root, _params, ctx) {
     }
   });
 
-  // Håll fingret på ett kapitel eller en favorit för att sortera om.
-  onLongPress(browse, '.chapter[data-chapter], .shelf-card[data-fav]', async el => {
-    const done = el.dataset.chapter ? await sortChapters(el.dataset.chapter) : await sortFavorites(el.dataset.fav);
-    if (done) renderBrowse(browse);
+  // Håll fingret på ett kapitel eller en favorit och dra den till ny plats.
+  const stopSort = enableGridSort(browse, {
+    gridSel: '.chapters, .shelf', itemSel: '.chapter[data-chapter], .shelf-card[data-fav]',
+    onDrop(grid, ids) {
+      if (grid.classList.contains('chapters')) reorderChapters(ids);
+      else reorderFavorites(ids);
+    },
   });
 
   if (ctx.direction === 'init' && !query) {
     // Sökfältet i fokus vid start
     requestAnimationFrame(() => input.focus({ preventScroll: true }));
   }
+  return stopSort;
 }
 
 function renderBrowse(el) {
@@ -105,7 +107,7 @@ function renderBrowse(el) {
   }
 
   html += `<div class="section-head"><h2 class="section-title">Kapitel</h2>
-    ${chapters.length > 1 ? `<button type="button" class="text-btn" data-action="sort-chapters">${icon('arrow-up-down')}Sortera</button>` : ''}</div>
+</div>
     <div class="chapters">
       ${chapters.map(chapterCard).join('')}
       ${noChapterCard()}
@@ -118,7 +120,7 @@ function renderBrowse(el) {
     html += `<h2 class="section-title">${icon('heart', 'inline-icon fav-icon')} Favoriter</h2>
       <div class="shelf" role="list">${favs.map(r => {
         const ch = chapterOf(r);
-        return `<a class="shelf-card" role="listitem" href="#/recept/${r.id}" data-link data-fav="${r.id}" style="--c: ${colorVar(ch)}">
+        return `<a class="shelf-card" role="listitem" href="#/recept/${r.id}" data-link data-fav="${r.id}" data-id="${r.id}" style="--c: ${colorVar(ch)}">
           <span class="shelf-title">${esc(displayTitle(r))}</span>
           <span class="shelf-sub">${esc(ch?.name || 'Utan kapitel')}</span>
         </a>`;
@@ -192,22 +194,4 @@ function renderResults(el, q) {
       const sub = h.reason ? `${h.reason.kind}: <b>${esc(h.reason.text)}</b>` : esc(h.chapter?.name || 'Utan kapitel');
       return recipeRow(r, { sub, titleHtml: highlight(h.title, h.ranges) });
     }).join('')}</div>`;
-}
-
-async function sortChapters(marked = null) {
-  const ids = await sortSheet({
-    title: 'Sortera kapitel', marked,
-    items: chaptersSorted().map(c => ({ id: c.id, label: c.name })),
-  });
-  if (ids) reorderChapters(ids);
-  return !!ids;
-}
-
-async function sortFavorites(marked = null) {
-  const ids = await sortSheet({
-    title: 'Sortera favoriter', marked,
-    items: favoritesSorted().map(r => ({ id: r.id, label: displayTitle(r), sub: chapterOf(r)?.name || '' })),
-  });
-  if (ids) reorderFavorites(ids);
-  return !!ids;
 }
