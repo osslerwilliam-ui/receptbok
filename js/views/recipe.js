@@ -13,6 +13,7 @@ import { ingredientsHtml, stepsHtml, testlogsHtml, testLogSheet, stars } from '.
 import { navigate, back } from '../router.js';
 import { shareRecipe } from '../share.js';
 import { addToListFlow } from '../tolist.js';
+import { printRecipes } from '../pdf.js';
 import * as wakelock from '../wakelock.js';
 
 // Tillfälligt läge per recept (flik och avbockningar). Sparas inte.
@@ -242,6 +243,7 @@ async function openMenu(id, t) {
   ];
   if (nVersions > 1) items.push({ label: `Visa historik (${nVersions} versioner)`, value: 'history', icon: 'clock' });
   if (b.version.ingredients.length) items.push({ label: 'Lägg i inköpslista', value: 'to-list', icon: 'list-plus' });
+  items.push({ label: 'Spara som PDF', value: 'pdf', icon: 'file-text' });
   items.push(...variantItems);
   items.push(
     { label: 'Flytta till kapitel', value: 'move', icon: 'folder-input' },
@@ -254,6 +256,7 @@ async function openMenu(id, t) {
   else if (choice === 'new-version') newVersionFlow(id);
   else if (choice === 'log') testLogSheet(b.version.id);
   else if (choice === 'to-list') addToListFlow(b, { scale: t.scale });
+  else if (choice === 'pdf') printRecipes([id]);
   else if (choice === 'history') navigate(`/recept/${id}/historik`);
   else if (choice === 'lock') {
     if (!await confirmSheet({
