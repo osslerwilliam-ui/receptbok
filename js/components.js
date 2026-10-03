@@ -1,7 +1,6 @@
 // Återanvändbara delar: receptrader, kapitelkort och kapiteldialoger.
 
 import { icon, esc, sheet } from './ui.js';
-import { enableDragSort } from './dragsort.js';
 import { CHAPTER_COLORS, chaptersSorted, chapterOf, displayTitle, isInDevelopment, NO_CHAPTER, recipesInChapter } from './store.js';
 
 export const EMOJIS = ['🍞', '🥐', '🥘', '🍲', '🥗', '🍝', '🐟', '🍗', '🥩', '🥦', '🍰', '🍪', '🥧', '🍓', '🍋', '🧀', '🥞', '🍕', '🌶️', '🫙', '🍹', '☕'];
@@ -23,7 +22,7 @@ export function recipeRow(r, { sub, titleHtml, path = null } = {}) {
 
 export function chapterCard(ch) {
   const n = recipesInChapter(ch.id).length;
-  return `<a class="chapter" ${link('/kapitel/' + ch.id)} data-chapter="${ch.id}" style="--c: ${colorVar(ch)}">
+  return `<a class="chapter" ${link('/kapitel/' + ch.id)} data-chapter="${ch.id}" data-id="${ch.id}" style="--c: ${colorVar(ch)}">
     <span class="emoji" aria-hidden="true">${esc(ch.emoji || '')}</span>
     <span><span class="name">${esc(ch.name)}</span><span class="count">${n} ${n === 1 ? 'recept' : 'recept'}</span></span>
   </a>`;
@@ -106,32 +105,6 @@ export function pickChapterSheet({ title = 'Välj kapitel', exclude = null, curr
 export function emptyState({ title, text, button = '', icon: ic = '' }) {
   return `<div class="empty">${ic ? `<div class="empty-icon">${icon(ic)}</div>` : ''}
     <div class="big">${esc(title)}</div>${text ? `<p>${esc(text)}</p>` : ''}${button}</div>`;
-}
-
-/**
- * Sorteringsark: dra raderna i handtaget till önskad ordning.
- * items: [{ id, label, sub? }], marked: id att markera (det man höll på). Returnerar id:n i ny ordning eller null.
- */
-export async function sortSheet({ title, items, marked = null }) {
-  let order = items.slice();
-  const draw = () => order.map(it => `
-    <li class="sort-row${it.id === marked ? ' marked' : ''}" data-id="${esc(it.id)}">
-      <span class="sort-name">${esc(it.label)}</span>${it.sub ? `<span class="sort-sub">${esc(it.sub)}</span>` : ''}
-      <span class="sort-grip" aria-label="Dra för att flytta ${esc(it.label)}">${icon('grip-vertical')}</span>
-    </li>`).join('');
-  const ok = await sheet({
-    title,
-    body: `<p class="sheet-text">Dra i ${icon('grip-vertical', 'inline-icon')} för att ändra ordningen.</p><ul class="sort-list">${draw()}</ul>`,
-    actions: [{ label: 'Avbryt', value: false }, { label: 'Klar', value: true, kind: 'primary' }],
-    onOpen(el) {
-      const ul = el.querySelector('.sort-list');
-      enableDragSort(ul, {
-        rowSel: '.sort-row', handleSel: '.sort-grip', holdMs: 0,
-        onMove(from, to) { const [it] = order.splice(from, 1); order.splice(to, 0, it); ul.innerHTML = draw(); },
-      });
-    },
-  });
-  return ok ? order.map(it => it.id) : null;
 }
 
 export { displayTitle };
