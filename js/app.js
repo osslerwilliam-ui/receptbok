@@ -20,6 +20,9 @@ const views = {
   version: () => import('./views/history.js'),
   compare: () => import('./views/history.js'),
   settings: () => import('./views/settings.js'),
+  lists: () => import('./views/lists.js'),
+  list: () => import('./views/lists.js'),
+  listedit: () => import('./views/listedit.js'),
 };
 
 const app = document.getElementById('app');
@@ -108,7 +111,7 @@ async function boot() {
   const preload = () => {
     // Städa bort foton från testloggar som tagits bort.
     db.deleteOrphanPhotos(new Set(data.testlogs.map(l => l.id))).catch(() => {});
-    ['chapter', 'recipe', 'edit', 'settings', 'history'].forEach(n => views[n]().catch(() => {}));
+    ['chapter', 'recipe', 'edit', 'settings', 'history', 'lists'].forEach(n => views[n]().catch(() => {}));
     import('./search.js').then(m => m.search('')); // bygger sökindexet i förväg
   };
   if ('requestIdleCallback' in window) requestIdleCallback(preload, { timeout: 2000 });
