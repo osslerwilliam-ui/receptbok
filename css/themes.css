@@ -279,5 +279,4 @@
 /* Seriös: startsidorna helt utan symboler – bara text. */
 [data-palette="serios"] :is(.chapter .emoji, .section-title .inline-icon, .rrow .dot, .rrow .badge .icon, .chapter.add .icon, .list-card .pin-icon, .list-card.add .icon, .text-btn .icon, .notice > .icon, .recent-chev) { display: none; }
 [data-palette="serios"] .chapter { box-shadow: none; }
-[data-palette="serios"] .sort-row { box-shadow: none; border: 1px solid var(--line); }
 [data-palette="herbarium"] .li-amt { font-weight: 800; }
