@@ -169,9 +169,6 @@ h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; }
 .meta { color: var(--text-muted); font-size: var(--fs-sm); display: flex; gap: var(--sp-2) var(--sp-4); flex-wrap: wrap; align-items: center; }
 .meta > span { display: inline-flex; align-items: center; gap: 6px; }
 .meta .icon { width: 16px; height: 16px; }
-.tags { display: inline-flex; flex-wrap: wrap; gap: 6px; }
-.recipe-tags { display: flex; margin-top: calc(var(--sp-1) * -1); }
-.tag { background: var(--surface-2); color: var(--text-muted); border-radius: 999px; padding: 2px 10px; font-size: var(--fs-xs); }
 .desc { margin: var(--sp-1) 0 0; font: 400 italic var(--fs-base)/1.45 var(--font-serif); color: var(--text-muted); }
 
 .seg { margin: 0 var(--sp-5) var(--sp-5); display: grid; grid-template-columns: 1fr 1fr; background: var(--surface-2); border-radius: 999px; padding: 4px; position: relative; }
