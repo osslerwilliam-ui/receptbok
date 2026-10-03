@@ -58,6 +58,7 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Skala:** tryck *Skala* under receptets titel för att tillfälligt ändra mängderna (½×, 1½×, 2× …, eget tal eller antal portioner). Gäller även kokläget och delning, och nollställs när du lämnar receptet.
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
+- **Lägg i inköpslista:** knappen under ingredienserna (eller **⋮** → *Lägg i inköpslista*). Bocka ur det du redan har hemma och välj *Ny lista* (får receptets namn) eller en befintlig lista – då hamnar varorna sist i listan under receptets namn. Är receptet skalat följer mängderna med, och samma vara på flera ställen (t.ex. smör i deg och fyllning) blir en rad.
 - **Utseende:** kugghjulet → *Utseende*. Välj ljust, mörkt eller som telefonen, och ett av tre teman: Terrakotta (varm kokbok), Herbarium (salvia och oliv, elegant och mjukt) eller Seriös (svartvitt och stramt).
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
@@ -68,6 +69,7 @@ Tryck på **listikonen** uppe till höger på startsidan (bredvid kugghjulet).
 - **Ny lista:** ge den en titel och gärna en undertitel (visas i kursiv). Bocka i *Fäst listan* om den ska ligga överst.
 - **Lägga till varor:** när du skapat listan kommer du direkt till redigeringen. Skriv en vara och tryck Enter för nästa rad. Använd *+ Grupp* för grupper (t.ex. Mejeri) eller *Klistra in* för många rader på en gång. Senare når du redigeringen med knappen **Redigera lista** längst ner i listan.
 - **I affären:** öppna listan och tryck på en vara för att stryka över den – den blir mycket blek så att det som är kvar syns tydligt. Överstrykningarna sparas, även om du lämnar listan. Skärmen hålls tänd.
+- **Dela:** dela-ikonen uppe till höger skickar listan som text (t.ex. i WhatsApp): *Inköpslista – titel* och sedan varorna rad för rad. Varor du redan strukit över skickas inte med.
 - **Redigera** (via **⋮**): ändra titel, varor och grupper, flytta rader genom att hålla och dra i **⋮**.
 - **Arkivera** (via **⋮**, eller knappen som visas när allt är handlat): listan flyttas till *Arkiv* längst ner på listsidan.
   En **fäst lista** blir kvar: en kopia sparas i arkivet och den fästa listan töms – bara titel, undertitel och **fästa varor** blir kvar. Fäst en vara via **⋮** på varan när du redigerar en fäst lista.

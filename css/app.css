@@ -643,3 +643,16 @@ ol.dlist { counter-reset: d; }
 .grid-dragging { position: relative; z-index: 20; box-shadow: 0 14px 34px rgb(0 0 0 / .22) !important; transition: none !important; cursor: grabbing; }
 .grid-sorting { touch-action: none; }
 .grid-sorting :is(.chapter, .shelf-card, .list-card):not(.grid-dragging) { transition: transform 180ms ease; }
+
+/* ---------- Lägg i inköpslista ---------- */
+.to-list { width: 100%; margin-top: var(--sp-4); }
+.pick-head { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); }
+.link-btn { border: 0; background: none; color: var(--accent); font: inherit; font-size: var(--fs-sm); font-weight: 600; min-height: 44px; padding: 0 var(--sp-2); margin-right: calc(var(--sp-2) * -1); }
+.pick-label { margin: var(--sp-5) 0 var(--sp-1); }
+.pick-list { display: grid; }
+.pick-group { margin: var(--sp-3) 0 0; font-size: var(--fs-xs); font-weight: 600; color: var(--text-muted); }
+.pick-row { display: flex; align-items: center; gap: var(--sp-3); min-height: 44px; font-size: var(--fs-sm); cursor: pointer; border-bottom: 1px solid var(--line); }
+.pick-row:last-child { border-bottom: 0; }
+.pick-row input { width: 22px; height: 22px; margin: 0; accent-color: var(--accent); flex: none; }
+.pick-row > span { min-width: 0; overflow-wrap: anywhere; padding: var(--sp-2) 0; }
+.pick-row .inline-icon { color: var(--text-muted); }
