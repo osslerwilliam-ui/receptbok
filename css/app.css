@@ -170,6 +170,7 @@ h1, h2, h3 { overflow-wrap: break-word; hyphens: auto; }
 .meta > span { display: inline-flex; align-items: center; gap: 6px; }
 .meta .icon { width: 16px; height: 16px; }
 .tags { display: inline-flex; flex-wrap: wrap; gap: 6px; }
+.recipe-tags { display: flex; margin-top: calc(var(--sp-1) * -1); }
 .tag { background: var(--surface-2); color: var(--text-muted); border-radius: 999px; padding: 2px 10px; font-size: var(--fs-xs); }
 .desc { margin: var(--sp-1) 0 0; font: 400 italic var(--fs-base)/1.45 var(--font-serif); color: var(--text-muted); }
 

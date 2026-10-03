@@ -66,14 +66,14 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
             ${ch ? `${ch.emoji ? `<span class="kicker-emoji">${esc(ch.emoji)} </span>` : ''}${esc(ch.name)}${groupOf(recipe) ? ` · ${esc(groupOf(recipe).name)}` : ''}` : 'Utan kapitel'}</a>
           ${dev ? `<span class="badge">${icon('flask-conical')}Under utveckling · v${version.number}</span>` : ''}
           <h1 class="recipe-title">${esc(displayTitle(recipe))}</h1>
+          ${!cook && recipe.tags?.length ? `<div class="tags recipe-tags">${recipe.tags.map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div>` : ''}
           ${b.variants.length > 1 ? `<div class="variant-chips" role="tablist" aria-label="Varianter">${b.variants.map(v => `
             <button type="button" role="tab" class="vchip${v.id === variant.id ? ' on' : ''}" data-variant="${v.id}" aria-selected="${v.id === variant.id}">
               ${esc(v.name)}${v.status === 'development' ? `<span class="vchip-dev" title="Under utveckling">${icon('flask-conical')}</span>` : ''}</button>`).join('')}
           </div>` : ''}
-          ${(version.servings || hasContent || (!cook && recipe.tags?.length)) ? `<div class="meta">
+          ${(version.servings || hasContent) ? `<div class="meta">
             ${version.servings ? `<span>${icon('shopping-basket')}${esc(scaleServings(version.servings, t.scale))}</span>` : ''}
             ${ingredients.length ? `<button type="button" class="scale-chip${t.scale !== 1 ? ' on' : ''}" data-action="scale" aria-label="Skala receptet">${icon('arrow-up-down')}${t.scale !== 1 ? `Skalat ×${fmtFactor(t.scale)}` : 'Skala'}</button>` : ''}
-            ${!cook && recipe.tags?.length ? `<span class="tags">${recipe.tags.map(x => `<span class="tag">${esc(x)}</span>`).join('')}</span>` : ''}
           </div>` : ''}
           ${!cook && recipe.description ? `<p class="desc">${esc(recipe.description)}</p>` : ''}
         </header>
