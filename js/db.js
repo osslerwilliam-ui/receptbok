@@ -4,9 +4,9 @@
 // Datamodellens version (schemaVersion) sparas i meta-tabellen och hanteras i migrate.js.
 
 const DB_NAME = 'receptbok';
-const DB_VERSION = 2; // 2: tabell för foton
+const DB_VERSION = 3; // 2: tabell för foton, 3: inköpslistor
 
-export const STORES = ['chapters', 'recipes', 'variants', 'versions', 'testlogs'];
+export const STORES = ['chapters', 'recipes', 'variants', 'versions', 'testlogs', 'lists'];
 
 let dbPromise = null;
 let blockedHandler = () => {};
