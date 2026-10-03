@@ -7,7 +7,7 @@
 // 3. Vid start körs migreringen automatiskt. Innan den körs laddas en backup ned och en kopia
 //    sparas i databasen (se app.js), så att ingen data kan gå förlorad.
 
-export const SCHEMA_VERSION = 5;
+export const SCHEMA_VERSION = 6;
 
 export const MIGRATIONS = {
   // Fas 2: status och frysta versioner används på riktigt.
@@ -35,6 +35,13 @@ export const MIGRATIONS = {
   // Inköpslistor (ny tabell).
   5: data => {
     data.lists = Array.isArray(data.lists) ? data.lists : [];
+    return data;
+  },
+  // Egen ordning för favoriter (favOrder) och inköpslistor (sortOrder).
+  6: data => {
+    const coll = (a, b) => (a || '').localeCompare(b || '', 'sv');
+    data.recipes.filter(r => r.favorite).sort((a, b) => coll(a.title, b.title)).forEach((r, i) => { r.favOrder ??= i; });
+    data.lists.sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || '')).forEach((l, i) => { l.sortOrder ??= i; });
     return data;
   },
 };
