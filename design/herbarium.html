@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Receptbok Herbarium</title>
+<style>
+/* Provsida för temat "Herbarium": Olivlunds färger med Cormorant Garamond (rubriker) och Nunito (text),
+   mjuka former, tunna gröna linjer, kapitelkort som herbarieetiketter och små ornament. */
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Nunito"; src: url("../fonts/nunito-latin-wght-normal.woff2") format("woff2"); font-weight: 200 1000; font-display: swap; }
+
+:root {
+  --page: #e3e1d3; --page-text: #2c2e23;
+  --serif: "Cormorant", Garamond, Georgia, serif; --sans: "Nunito", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --page: #121410; --page-text: #e8e9dc; color-scheme: dark; } }
+:root[data-theme="dark"] { --page: #121410; --page-text: #e8e9dc; color-scheme: dark; }
+.stage {
+  --bg: #f1efe6; --surface: #faf9f3; --surface-2: #e7e5d7; --text: #2c2e23; --muted: #666956; --line: #cfd3b8;
+  --accent: #5f6b33; --accent-strong: #4a5427; --ink: #f8f8f0; --soft: #e1e6cf; --title: #3a4526; --dev: #f3efdc; --dev-ink: #7a6a2a;
+}
+.stage[data-m="dark"] {
+  --bg: #191b15; --surface: #22251d; --surface-2: #2d3026; --text: #e8e9dc; --muted: #a3a68f; --line: #3d4231;
+  --accent: #a9b872; --accent-strong: #c0cd8a; --ink: #191b15; --soft: #33391f; --title: #dfe5c4; --dev: #24251b; --dev-ink: #d4c47c;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--page-text); font: 400 16px/1.5 var(--sans); padding-inline: 16px; padding-block: 24px 48px; }
+button { font: inherit; color: inherit; cursor: pointer; }
+.wrap { max-width: 1180px; margin: 0 auto; display: grid; gap: 20px; }
+.intro h1 { font: 600 2rem/1.1 var(--serif); margin: 0; }
+.intro p { margin: 6px 0 0; font-size: .95rem; max-width: 62ch; opacity: .85; }
+.modes { display: flex; gap: 4px; padding: 4px; border-radius: 999px; background: rgb(127 127 100 / .18); width: max-content; }
+.modes button { border: 0; background: none; min-height: 38px; padding: 0 18px; border-radius: 999px; font-weight: 700; font-size: .85rem; }
+.modes button[aria-pressed="true"] { background: var(--page-text); color: var(--page); }
+
+.stage { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+.phone { width: 100%; max-width: 360px; background: var(--bg); color: var(--text); border-radius: 30px; padding: 20px 18px 24px; display: grid; gap: 16px; align-content: start;
+  box-shadow: 0 2px 6px rgb(0 0 0 / .06), 0 18px 40px rgb(40 50 20 / .12); transition: background .2s, color .2s; }
+.icon { width: 20px; height: 20px; display: block; flex: none; }
+.orn { color: var(--accent); font-family: var(--serif); }
+
+/* Startsida */
+.head { display: flex; justify-content: space-between; align-items: center; }
+.wordmark { font: 600 2.1rem/1 var(--serif); color: var(--title); letter-spacing: .005em; }
+.wordmark i { color: var(--accent); margin-left: -.12em; }
+.head span { display: flex; gap: 14px; color: var(--muted); }
+.search { display: flex; align-items: center; gap: 10px; min-height: 50px; padding: 0 16px; border-radius: 999px; background: var(--surface); color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); font-size: .95rem; }
+.label { font: 600 italic 1.2rem/1 var(--serif); color: var(--title); display: flex; align-items: center; gap: 8px; }
+.label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.chapters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ch { background: var(--surface); border-radius: 18px; padding: 6px; box-shadow: 0 1px 2px rgb(40 50 20 / .06); }
+.ch > div { border: 1px solid var(--line); border-radius: 13px; padding: 12px 12px 10px; display: grid; gap: 6px; justify-items: center; text-align: center; min-height: 104px; align-content: center; }
+.ch .e { font-size: 1.4rem; }
+.ch b { font: 600 1.35rem/1 var(--serif); color: var(--title); }
+.ch small { font-size: .72rem; color: var(--muted); letter-spacing: .08em; text-transform: uppercase; font-weight: 700; }
+.shelf { display: flex; gap: 10px; overflow: hidden; margin-right: -18px; }
+.fav { flex: 0 0 120px; background: var(--soft); border-radius: 18px 18px 18px 4px; padding: 12px; display: grid; gap: 4px; min-height: 96px; align-content: start; }
+.fav b { font: 600 1.15rem/1.05 var(--serif); color: var(--title); }
+.fav small { font-size: .75rem; color: var(--muted); }
+.dev { background: var(--dev); border-radius: 16px; padding: 4px 14px; }
+.dev div { display: flex; justify-content: space-between; align-items: baseline; padding: 9px 0; }
+.dev div + div { border-top: 1px dashed var(--line); }
+.dev b { font: 600 1.1rem/1.2 var(--serif); color: var(--title); }
+.dev small { font-size: .75rem; color: var(--dev-ink); font-weight: 700; }
+.recent { display: flex; align-items: center; gap: 8px; color: var(--muted); font: 600 italic 1.05rem var(--serif); }
+.recent::after { content: "▾"; margin-left: auto; font-style: normal; }
+
+/* Recept */
+.bar { display: flex; justify-content: space-between; color: var(--text); }
+.bar span { display: flex; gap: 16px; }
+.heart { color: var(--accent); fill: currentColor; }
+.kicker { font-size: .72rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 800; color: var(--accent-strong); }
+.r-title { font: 600 2.3rem/1 var(--serif); margin: 4px 0 0; color: var(--title); }
+.chips { display: flex; gap: 8px; }
+.chips span { border-radius: 999px; padding: 6px 14px; font-size: .85rem; font-weight: 700; color: var(--muted); box-shadow: inset 0 0 0 1px var(--line); }
+.chips span.on { background: var(--accent); color: var(--ink); box-shadow: none; }
+.meta { display: flex; gap: 10px; align-items: center; color: var(--muted); font-size: .9rem; }
+.meta .sc { background: var(--soft); color: var(--accent-strong); border-radius: 999px; padding: 3px 12px; font-weight: 700; font-size: .82rem; }
+.tabs { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--line); text-align: center; }
+.tabs span { padding: 10px; font: 600 1.15rem var(--serif); color: var(--muted); }
+.tabs span.on { color: var(--title); box-shadow: inset 0 -2px 0 var(--accent); }
+.grp { font: 600 italic 1.3rem/1.2 var(--serif); color: var(--title); margin: 0; display: flex; gap: 8px; align-items: baseline; }
+.ing { display: grid; grid-template-columns: 3.2em 2.2em 1fr; gap: 8px; align-items: baseline; padding: 9px 0; border-bottom: 1px dotted var(--line); }
+.ing .a { text-align: right; font-weight: 800; font-variant-numeric: tabular-nums; }
+.ing .u { color: var(--muted); font-size: .9em; }
+.ing.done { opacity: .35; }
+.ing.done .n { text-decoration: line-through; }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.btn { min-height: 46px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 800; font-size: .9rem; }
+.btn.p { background: var(--accent); color: var(--ink); }
+.btn.q { box-shadow: inset 0 0 0 1px var(--line); color: var(--text); }
+
+/* Inköpslista */
+.l-title { font: 600 2.1rem/1 var(--serif); margin: 0; color: var(--title); }
+.l-sub { font: 600 italic 1.15rem var(--serif); color: var(--muted); margin: 2px 0 0; }
+.l-count { font-size: .85rem; color: var(--muted); margin: 6px 0 0; }
+.l-count b { color: var(--accent-strong); }
+.item { display: flex; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px dotted var(--line); font-size: 1.15rem; }
+.box { width: 24px; height: 24px; border-radius: 50%; box-shadow: inset 0 0 0 2px var(--accent); flex: none; display: grid; place-items: center; color: var(--ink); }
+.box .icon { width: 15px; height: 15px; }
+.item.done { opacity: .3; }
+.item.done .t { text-decoration: line-through; }
+.item.done .box { background: var(--accent); }
+.item .t b { font-weight: 800; }
+.qa { display: flex; gap: 8px; }
+.qa span { flex: 1; border-radius: 999px; min-height: 48px; display: flex; align-items: center; padding: 0 16px; background: var(--surface); box-shadow: inset 0 0 0 1px var(--line); color: var(--muted); }
+.qa b { width: 48px; height: 48px; border-radius: 50%; background: var(--accent); color: var(--ink); display: grid; place-items: center; }
+
+.foot { font-size: .92rem; opacity: .85; max-width: 70ch; }
+.foot ul { margin: 6px 0 0; padding-left: 1.2em; }
+@media (max-width: 420px) { body { padding-inline: 10px; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="intro">
+    <h1>Receptbok – temat ”Herbarium”</h1>
+    <p>Olivlunds salvia- och olivgröna färger, men med egen karaktär: elegant antikva (Cormorant Garamond) i rubrikerna, mjuk och rund text (Nunito), runda former, tunna gröna linjer och kapitelkort som herbarieetiketter.</p>
+  </header>
+  <div class="modes" role="group" aria-label="Ljust eller mörkt">
+    <button type="button" data-mode="light" aria-pressed="true">Ljust</button>
+    <button type="button" data-mode="dark" aria-pressed="false">Mörkt</button>
+  </div>
+
+  <section class="stage" id="stage" data-m="light">
+    <div class="phone" aria-label="Startsida">
+      <div class="head"><span class="wordmark">Recept<i>bok</i></span><span><span data-i="clipboard-list"></span><span data-i="settings"></span></span></div>
+      <div class="search"><span data-i="search"></span>Sök recept, ingrediens…</div>
+      <span class="label"><span class="orn">❦</span>Kapitel</span>
+      <div class="chapters">
+        <div class="ch"><div><span class="e">🍞</span><b>Bröd</b><small>12 recept</small></div></div>
+        <div class="ch"><div><span class="e">🥗</span><b>Sallader</b><small>7 recept</small></div></div>
+      </div>
+      <span class="label"><span class="orn">♡</span>Favoriter</span>
+      <div class="shelf">
+        <div class="fav"><span>🥐</span><b>Kardemumma­bullar</b><small>Bakverk</small></div>
+        <div class="fav"><span>🍞</span><b>Surdegsbröd</b><small>Bröd</small></div>
+        <div class="fav"><span>🍲</span><b>Linsgryta</b><small>Vardag</small></div>
+      </div>
+      <span class="label"><span class="orn">✎</span>Under utveckling</span>
+      <div class="dev"><div><b>Rabarberpaj</b><small>v4 · 28 sep</small></div><div><b>Fröknäcke – Grov</b><small>v2 · ej testad</small></div></div>
+      <span class="recent">Senast visade</span>
+    </div>
+
+    <div class="phone" aria-label="Receptvy">
+      <div class="bar"><span data-i="chevron-left"></span><span><span data-i="heart" data-c="heart"></span><span data-i="share-2"></span><span data-i="ellipsis-vertical"></span></span></div>
+      <div><span class="kicker">🍞 Bröd</span><h2 class="r-title">Surdegsbröd</h2></div>
+      <div class="chips"><span class="on">Standard</span><span>Med frön</span></div>
+      <div class="meta"><span>2 bröd</span><span class="sc">Skalat ×1½</span></div>
+      <div class="tabs"><span class="on">Ingredienser</span><span>Instruktioner</span></div>
+      <div>
+        <p class="grp"><span class="orn">❧</span>Deg</p>
+        <div class="ing done"><span class="a">675</span><span class="u">g</span><span class="n">vetemjöl</span></div>
+        <div class="ing"><span class="a">75</span><span class="u">g</span><span class="n">fullkornsråg</span></div>
+        <div class="ing"><span class="a">570</span><span class="u">g</span><span class="n">vatten</span></div>
+        <div class="ing"><span class="a">15</span><span class="u">g</span><span class="n">salt</span></div>
+      </div>
+      <div class="btns"><span class="btn p"><span data-i="chef-hat"></span>Kokläge</span><span class="btn q">Logga test</span></div>
+    </div>
+
+    <div class="phone" aria-label="Inköpslista">
+      <div class="bar"><span data-i="chevron-left"></span><span><span data-i="ellipsis-vertical"></span></span></div>
+      <div>
+        <h2 class="l-title">Veckohandling</h2>
+        <p class="l-sub">Basvaror varje vecka</p>
+        <p class="l-count"><b>3</b> kvar av 5</p>
+      </div>
+      <div>
+        <p class="grp"><span class="orn">❧</span>Mejeri</p>
+        <div class="item done"><span class="box"><span data-i="check"></span></span><span class="t"><b>2 l</b> mjölk</span></div>
+        <div class="item"><span class="box"></span><span class="t"><b>500 g</b> smör</span></div>
+        <p class="grp" style="margin-top:14px"><span class="orn">❧</span>Frukt & grönt</p>
+        <div class="item done"><span class="box"><span data-i="check"></span></span><span class="t"><b>1 kg</b> äpplen</span></div>
+        <div class="item"><span class="box"></span><span class="t">dill</span></div>
+        <div class="item"><span class="box"></span><span class="t">citroner</span></div>
+      </div>
+      <div class="qa"><span>Lägg till i Frukt & grönt…</span><b><span data-i="plus"></span></b></div>
+    </div>
+  </section>
+
+  <section class="foot">
+    <b>Så skiljer sig Herbarium från Terrakotta och Seriös:</b>
+    <ul>
+      <li>Rubriker i en hög, elegant antikva och text i ett mjukt, runt typsnitt.</li>
+      <li>Kapitelkort som herbarieetiketter med tunn inre ram, centrerad text och små ornament (❦ ❧) vid rubriker.</li>
+      <li>Runda former: runda bockrutor i inköpslistan, pillerformade knappar, prickade linjer mellan ingredienser.</li>
+      <li>Flikar markeras med en grön linje under i stället för en knapp.</li>
+    </ul>
+  </section>
+</div>
+<script type="module">
+import { icon } from "../js/icons.js";
+document.querySelectorAll("[data-i]").forEach(el => el.outerHTML = icon(el.dataset.i, el.dataset.c || ""));
+const stage = document.getElementById("stage");
+const set = m => { stage.dataset.m = m; document.querySelectorAll("[data-mode]").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === m)); };
+document.querySelectorAll("[data-mode]").forEach(b => b.addEventListener("click", () => set(b.dataset.mode)));
+if (matchMedia("(prefers-color-scheme: dark)").matches) set("dark");
+</script>
+</body>
+</html>

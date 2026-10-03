@@ -8,13 +8,17 @@ import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, 
 import { navigate } from '../router.js';
 
 let query = '';
+let recentOpen = false; // "Senast visade" är hopfälld tills man öppnar den
 
 export function render(root, _params, ctx) {
   root.innerHTML = `
     <div class="page home">
       <header class="home-head">
         <h1 class="wordmark">Recept<em>bok</em></h1>
-        <a class="icon-btn" href="#/installningar" data-link aria-label="Inställningar">${icon('settings')}</a>
+        <span class="head-actions">
+          <a class="icon-btn" href="#/listor" data-link aria-label="Inköpslistor">${icon('clipboard-list')}</a>
+          <a class="icon-btn" href="#/installningar" data-link aria-label="Inställningar">${icon('settings')}</a>
+        </span>
       </header>
       <div class="search" role="search">
         ${icon('search', 'search-icon')}
@@ -101,33 +105,48 @@ function renderBrowse(el) {
       <button type="button" class="chapter add" data-action="new-chapter">${icon('folder-plus')}<span>Nytt kapitel</span></button>
     </div>`;
 
+  // Favoriter: vågrät rad med små kort.
   const favs = recipes.filter(r => r.favorite).sort((a, b) => displayTitle(a).localeCompare(displayTitle(b), 'sv'));
   if (favs.length) {
-    html += `<h2 class="section-title">${icon('heart', 'inline-icon fav-icon')} Favoriter</h2><div class="rlist">${favs.map(r =>
-      recipeRow(r, { sub: esc(chapterOf(r)?.name || 'Utan kapitel') })).join('')}</div>`;
+    html += `<h2 class="section-title">${icon('heart', 'inline-icon fav-icon')} Favoriter</h2>
+      <div class="shelf" role="list">${favs.map(r => {
+        const ch = chapterOf(r);
+        return `<a class="shelf-card" role="listitem" href="#/recept/${r.id}" data-link style="--c: ${colorVar(ch)}">
+          <span class="shelf-emoji" aria-hidden="true">${esc(ch?.emoji || '📄')}</span>
+          <span class="shelf-title">${esc(displayTitle(r))}</span>
+          <span class="shelf-sub">${esc(ch?.name || 'Utan kapitel')}</span>
+        </a>`;
+      }).join('')}</div>`;
   }
 
-  const recent = recipes.filter(r => r.lastViewedAt).sort((a, b) => b.lastViewedAt.localeCompare(a.lastViewedAt)).slice(0, 5);
-  if (recent.length) {
-    html += `<h2 class="section-title">Senast visade</h2><div class="rlist">${recent.map(r =>
-      recipeRow(r, { sub: `${esc(chapterOf(r)?.name || 'Utan kapitel')} · ${fmtRelative(r.lastViewedAt)}` })).join('')}</div>`;
-  }
-
+  // Under utveckling: kompakt lista, en rad per variant.
   const dev = recipes.filter(r => isInDevelopment(r.id));
   if (dev.length) {
-    // En rad per variant som är under utveckling.
-    html += `<h2 class="section-title">Under utveckling</h2><div class="rlist">${dev.flatMap(r => {
+    html += `<h2 class="section-title">${icon('flask-conical', 'inline-icon dev-icon')} Under utveckling</h2><div class="devlist">${dev.flatMap(r => {
       const vs = variantsOf(r.id);
       return vs.filter(v => v.status === 'development').map(v => {
         const ver = state.versions.get(v.currentVersionId);
         const last = ver && testlogsOf(ver.id)[0];
-        const sub = [esc(chapterOf(r)?.name || 'Utan kapitel'), ver ? `v${ver.number}` : '', last ? `testad ${fmtDate(last.date)}` : 'inte testad än'].filter(Boolean).join(' · ');
-        const title = vs.length > 1 ? `${esc(displayTitle(r))} <span class="title-variant">– ${esc(v.name)}</span>` : undefined;
-        return recipeRow(r, { sub, titleHtml: title, path: vs.length > 1 ? `/recept/${r.id}/v/${v.id}` : null });
+        const path = vs.length > 1 ? `/recept/${r.id}/v/${v.id}` : `/recept/${r.id}`;
+        return `<a class="devrow" href="#${path}" data-link>
+          <span class="devrow-title">${esc(displayTitle(r))}${vs.length > 1 ? ` <span class="title-variant">– ${esc(v.name)}</span>` : ''}</span>
+          <span class="devrow-meta">${ver ? `v${ver.number}` : ''}${last ? ` · ${fmtDate(last.date)}` : ' · ej testad'}</span>
+        </a>`;
       });
     }).join('')}</div>`;
   }
+
+  // Senast visade: hopfälld längst ner.
+  const recent = recipes.filter(r => r.lastViewedAt).sort((a, b) => b.lastViewedAt.localeCompare(a.lastViewedAt)).slice(0, 5);
+  if (recent.length) {
+    html += `<details class="recent" ${recentOpen ? 'open' : ''}>
+      <summary class="section-title">${icon('clock', 'inline-icon')} Senast visade<span class="recent-chev">${icon('chevron-down')}</span></summary>
+      <div class="rlist">${recent.map(r =>
+        recipeRow(r, { sub: `${esc(chapterOf(r)?.name || 'Utan kapitel')} · ${fmtRelative(r.lastViewedAt)}` })).join('')}</div>
+    </details>`;
+  }
   el.innerHTML = html;
+  el.querySelector('.recent')?.addEventListener('toggle', e => { recentOpen = e.target.open; });
 }
 
 function backupDue(recipes) {

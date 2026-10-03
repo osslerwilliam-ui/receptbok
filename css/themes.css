@@ -345,3 +345,7 @@
 [data-palette="serios"] .lg.changed::before { content: "~ "; }
 [data-palette="serios"] .stars { color: var(--text); }
 [data-palette="serios"] .choice button { font-size: .7rem; letter-spacing: .04em; padding: 0 4px; }
+[data-palette="serios"] :is(.list-card, .shop-box, .qa-btn, .shelf-card, .devlist, .list-progress, .list-progress span) { border-radius: 0 !important; }
+[data-palette="serios"] :is(.list-card, .shelf-card) { box-shadow: none; border: 1px solid var(--line); }
+[data-palette="serios"] .list-card.pinned, [data-palette="serios"] .shelf-card { border-top: 2px solid var(--text); }
+[data-palette="serios"] :is(.list-count, .archive-date, .devrow-meta, .shop-count) { font-family: var(--font-mono); }

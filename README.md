@@ -47,7 +47,7 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 
 ## Så används appen
 
-- **Startsidan:** sök direkt i rutan överst. Sökningen hittar titlar, ingredienser, taggar och kapitel och klarar enkla stavfel. Under rutan finns kapitlen, senast visade recept och recept under utveckling.
+- **Startsidan:** sök direkt i rutan överst. Sökningen hittar titlar, ingredienser, taggar och kapitel och klarar enkla stavfel. Under rutan finns kapitlen, favoriterna (svep i sidled), recept under utveckling och – hopfällt längst ner – senast visade.
 - **Kapitel:** skapa med *Nytt kapitel*. Byt namn, ikon och färg eller ta bort via **⋮** inne i kapitlet. Ordningen ändras med *Sortera* på startsidan.
 - **Nytt recept:** gå in i ett kapitel och tryck **Nytt recept**. Allt sparas automatiskt medan du skriver. När du trycker *Klar* första gången frågar appen om receptet är färdigt: **Lås som klart** eller **Fortsätt utveckla**.
 - **Redigera:** överst namn, kapitel och taggar. Därunder växlar du mellan flikarna *Ingredienser* och *Instruktioner*. Håll fingret på **⋮** till höger om en rad och dra för att flytta den, eller tryck kort på **⋮** för att flytta upp/ned eller ta bort.
@@ -59,6 +59,18 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
 - **Utseende:** kugghjulet → *Utseende*. Välj ljust, mörkt eller som telefonen, och ett av sex färgteman: Terrakotta, Olivlund, Ockra & bläck, Rost & dimblå, Plommon & havre eller Seriös (svartvitt och stramt).
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
+
+### Inköpslistor
+
+Tryck på **listikonen** uppe till höger på startsidan (bredvid kugghjulet).
+
+- **Ny lista:** ge den en titel och gärna en undertitel (visas i kursiv). Bocka i *Fäst listan* om den ska ligga överst.
+- **Lägga till varor:** skriv i fältet längst ner och tryck Enter – fältet står kvar så du kan skriva nästa direkt. Skriv t.ex. `Mejeri:` för att börja en grupp. Du kan också klistra in flera rader på en gång.
+- **I affären:** tryck på en vara för att stryka över den. Överstrykningarna sparas, även om du lämnar listan. Skärmen hålls tänd.
+- **Redigera** (via **⋮**): ändra titel, varor och grupper, flytta rader genom att hålla och dra i **⋮**.
+- **Arkivera** (via **⋮**, eller knappen som visas när allt är handlat): listan flyttas till *Arkiv* längst ner på listsidan.
+  En **fäst lista** blir kvar: en kopia sparas i arkivet och den fästa listan töms – bara titel, undertitel och **fästa varor** blir kvar. Fäst en vara via **⋮** på varan när du redigerar en fäst lista.
+- Arkiverade listor kan öppnas, återställas eller användas som mall för en ny lista.
 
 ### Varianter
 

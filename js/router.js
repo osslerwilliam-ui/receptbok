@@ -14,6 +14,9 @@ const ROUTES = [
   [/^\/recept\/([^/]+)\/version\/([^/]+)$/, 'version'],
   [/^\/recept\/([^/]+)\/jamfor\/([^/]+)\/([^/]+)$/, 'compare'],
   [/^\/installningar$/, 'settings'],
+  [/^\/listor$/, 'lists'],
+  [/^\/lista\/([^/]+)$/, 'list'],
+  [/^\/lista\/([^/]+)\/redigera$/, 'listedit'],
 ];
 
 let handler = () => {};

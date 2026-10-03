@@ -9,6 +9,7 @@ export const state = {
   variants: new Map(),
   versions: new Map(),
   testlogs: new Map(),
+  lists: new Map(),
 };
 
 // Inställningar och annat från meta-tabellen (t.ex. lastExportAt), laddas vid start.
@@ -382,4 +383,65 @@ export function deleteVariant(variantId) {
   if (selected.get(variant.recipeId) === variantId) selected.delete(variant.recipeId);
   commit(ops);
   return removed;
+}
+
+/* ---------- Inköpslistor ----------
+   List: { id, title, subtitle, pinned, archived, archivedAt, items: [{ id, group?, text, checked, keep? }] }
+   keep = fäst vara: ligger kvar i en fäst lista när den arkiveras. */
+
+export function listsActive() {
+  return [...state.lists.values()].filter(l => !l.archived)
+    .sort((a, b) => (b.pinned - a.pinned) || (b.createdAt || '').localeCompare(a.createdAt || ''));
+}
+
+export function listsArchived() {
+  return [...state.lists.values()].filter(l => l.archived)
+    .sort((a, b) => (b.archivedAt || '').localeCompare(a.archivedAt || ''));
+}
+
+export function createList({ title = '', subtitle = '', pinned = false, items = [] } = {}) {
+  const t = now();
+  const list = { id: uuid(), title: title.trim(), subtitle: subtitle.trim(), pinned, archived: false, archivedAt: null, items, createdAt: t, updatedAt: t };
+  commit([{ store: 'lists', put: list }]);
+  return list;
+}
+
+export function updateList(id, patch) {
+  const l = state.lists.get(id);
+  if (!l) return;
+  return commit([{ store: 'lists', put: { ...l, ...patch, updatedAt: now() } }]);
+}
+
+export function deleteList(id) {
+  const l = state.lists.get(id);
+  if (!l) return null;
+  commit([{ store: 'lists', del: id }]);
+  return l;
+}
+
+export function restoreList(list) {
+  commit([{ store: 'lists', put: list }]);
+}
+
+/**
+ * Arkivera. En vanlig lista flyttas till arkivet.
+ * En fäst lista: en kopia sparas i arkivet och den fästa listan töms – bara titel, undertitel
+ * och fästa varor (keep) blir kvar, och de fästa varorna avbockas.
+ * Returnerar { archivedId, undo } där undo återställer läget före arkiveringen.
+ */
+export function archiveList(id) {
+  const l = state.lists.get(id);
+  if (!l) return null;
+  const t = now();
+  if (!l.pinned) {
+    commit([{ store: 'lists', put: { ...l, archived: true, archivedAt: t, updatedAt: t } }]);
+    return { archivedId: l.id, undo: () => commit([{ store: 'lists', put: l }]) };
+  }
+  const copy = { ...l, id: uuid(), pinned: false, archived: true, archivedAt: t, items: l.items.map(i => ({ ...i, id: uuid() })), createdAt: t, updatedAt: t };
+  const kept = l.items.filter(i => i.keep).map(i => ({ ...i, checked: false }));
+  commit([
+    { store: 'lists', put: copy },
+    { store: 'lists', put: { ...l, items: kept, updatedAt: t } },
+  ]);
+  return { archivedId: copy.id, keptCount: kept.length, undo: () => commit([{ store: 'lists', del: copy.id }, { store: 'lists', put: l }]) };
 }
