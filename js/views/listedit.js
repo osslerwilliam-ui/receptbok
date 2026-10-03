@@ -3,7 +3,7 @@
 import { icon, esc, $, $$, sheet, menuSheet, snack, debounce } from '../ui.js';
 import { state, updateList, uuid } from '../store.js';
 import { emptyState } from '../components.js';
-import { back } from '../router.js';
+import { back, navigate } from '../router.js';
 import { enableDragSort } from '../dragsort.js';
 import { parseItems } from './lists.js';
 
@@ -86,6 +86,9 @@ export function render(root, [id]) {
   const focusRow = (i, sel = 'input') => requestAnimationFrame(() => $(`.ed-row[data-i="${i}"] ${sel}`, listEl)?.focus());
   const newItem = () => ({ kind: 'item', id: uuid(), text: '', checked: false });
 
+  // Ny, tom lista: börja direkt med en tom rad att skriva i.
+  if (!rows.length) { rows.push(newItem()); draw(); focusRow(0); }
+
   enableDragSort(listEl, {
     rowSel: '.ed-row', handleSel: '.ed-menu',
     onMove(from, to) { const [r] = rows.splice(from, 1); rows.splice(to, 0, r); draw(); changed(); },
@@ -115,7 +118,13 @@ export function render(root, [id]) {
     const btn = e.target.closest('[data-action], [data-op]');
     if (!btn) return;
     const a = btn.dataset.action;
-    if (a === 'back') { save.flush(); back(`/lista/${id}`); return; }
+    if (a === 'back') {
+      save.flush();
+      // Kom man direkt från "Ny lista" finns ingen listvy bakom – byt till den i stället.
+      if (history.state?.from === `/lista/${id}`) back(`/lista/${id}`);
+      else navigate(`/lista/${id}`, { replace: true });
+      return;
+    }
     if (a === 'add-item') { rows.push(newItem()); draw(); focusRow(rows.length - 1); changed(); }
     else if (a === 'add-group') { rows.push({ kind: 'group', id: uuid(), name: '' }); draw(); focusRow(rows.length - 1); changed(); }
     else if (a === 'paste') {
