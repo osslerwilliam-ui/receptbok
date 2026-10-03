@@ -232,7 +232,7 @@
 [data-palette="herbarium"] .card-title, [data-palette="herbarium"] .sheet-title { font-size: 1.6rem; }
 /* Cormorant har tunna linjer: rubriker och receptnamn i fetaste vikten så de blir lika tydliga som i Terrakotta. */
 [data-palette="herbarium"] :is(.wordmark, .page-title, .recipe-title, .shop-title, .chapter .name, .rrow .t, .shelf-title, .devrow-title,
-  .list-title, .archive-title, .sheet-title, .card-title, .ed-heading, .ro-heading, .section-title, .group-name, .shop-group, .seg button, .theme-name) { font-weight: 700; }
+  .list-title, .archive-title, .cgroup-name, .sheet-title, .card-title, .ed-heading, .ro-heading, .section-title, .group-name, .shop-group, .seg button, .theme-name) { font-weight: 700; }
 
 /* ---------- Seriös: typsnitt, raka hörn, linjer i stället för färgytor ---------- */
 :root[data-palette="serios"] {
@@ -276,7 +276,7 @@
 [data-palette="serios"] .lg.changed::before { content: "~ "; }
 [data-palette="serios"] .stars { color: var(--text); }
 [data-palette="serios"] .choice button { font-size: .7rem; letter-spacing: .04em; padding: 0 4px; }
-[data-palette="serios"] :is(.list-card, .shop-box, .qa-btn, .shelf-card, .devlist, .list-progress, .list-progress span) { border-radius: 0 !important; }
+[data-palette="serios"] :is(.list-card, .shop-box, .qa-btn, .shelf-card, .devlist, .list-progress, .list-progress span, .cgroup-count) { border-radius: 0 !important; }
 [data-palette="serios"] :is(.list-card, .shelf-card) { box-shadow: none; border: 1px solid var(--line); }
 [data-palette="serios"] .list-card.pinned, [data-palette="serios"] .shelf-card { border-top: 2px solid var(--text); }
 [data-palette="serios"] :is(.list-count, .archive-date, .devrow-meta, .shop-count) { font-family: var(--font-mono); }

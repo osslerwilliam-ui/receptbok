@@ -68,7 +68,7 @@ export function createChapter({ name, emoji = '', color }) {
   const list = chaptersSorted();
   const t = now();
   const ch = {
-    id: uuid(), name: name.trim() || 'Nytt kapitel', emoji, color: color || CHAPTER_COLORS[list.length % CHAPTER_COLORS.length],
+    id: uuid(), name: name.trim() || 'Nytt kapitel', emoji, color: color || CHAPTER_COLORS[list.length % CHAPTER_COLORS.length], groups: [],
     sortOrder: list.length ? list[list.length - 1].sortOrder + 1 : 0, createdAt: t, updatedAt: t,
   };
   commit([{ store: 'chapters', put: ch }]);
@@ -89,9 +89,57 @@ export function reorderChapters(ids) {
 /** Tar bort ett kapitel. Recept i det flyttas till `moveTo` (ett kapitel-id eller null). */
 export function deleteChapter(id, moveTo = null) {
   const t = now();
-  const ops = recipesInChapter(id).map(r => ({ store: 'recipes', put: { ...r, chapterId: moveTo, updatedAt: t } }));
+  const ops = recipesInChapter(id).map(r => ({ store: 'recipes', put: { ...r, chapterId: moveTo, groupId: null, updatedAt: t } }));
   ops.push({ store: 'chapters', del: id });
   commit(ops);
+}
+
+/* ---------- Grupper i kapitel ---------- */
+// Ett kapitel kan ha grupper (t.ex. "Surdeg" i "Bröd"). De ligger i ordning i chapter.groups
+// som { id, name, collapsed }. Ett recept hör till en grupp via recipe.groupId.
+
+export function groupsOf(chapterId) {
+  return state.chapters.get(chapterId)?.groups || [];
+}
+
+/** Receptets grupp, om den finns i receptets kapitel. */
+export function groupOf(r) {
+  if (!r.groupId) return null;
+  return chapterOf(r)?.groups?.find(g => g.id === r.groupId) || null;
+}
+
+function putGroups(chapterId, groups) {
+  const ch = state.chapters.get(chapterId);
+  if (!ch) return;
+  commit([{ store: 'chapters', put: { ...ch, groups, updatedAt: now() } }]);
+}
+
+export function createGroup(chapterId, name) {
+  const g = { id: uuid(), name: name.trim() || 'Ny grupp', collapsed: false };
+  putGroups(chapterId, [...groupsOf(chapterId), g]);
+  return g;
+}
+
+export function updateGroup(chapterId, groupId, patch) {
+  putGroups(chapterId, groupsOf(chapterId).map(g => (g.id === groupId ? { ...g, ...patch } : g)));
+}
+
+export function reorderGroups(chapterId, ids) {
+  const byId = new Map(groupsOf(chapterId).map(g => [g.id, g]));
+  putGroups(chapterId, [...ids.map(id => byId.get(id)).filter(Boolean), ...[...byId.values()].filter(g => !ids.includes(g.id))]);
+}
+
+/** Tar bort en grupp. Recepten blir kvar i kapitlet, utan grupp. Returnerar det som behövs för att ångra. */
+export function deleteGroup(chapterId, groupId) {
+  const ch = state.chapters.get(chapterId);
+  if (!ch) return null;
+  const recipes = [...state.recipes.values()].filter(r => r.chapterId === chapterId && r.groupId === groupId);
+  const t = now();
+  commit([
+    { store: 'chapters', put: { ...ch, groups: groupsOf(chapterId).filter(g => g.id !== groupId), updatedAt: t } },
+    ...recipes.map(r => ({ store: 'recipes', put: { ...r, groupId: null, updatedAt: t } })),
+  ]);
+  return { chapters: [ch], recipes };
 }
 
 /* ---------- Recept ---------- */
@@ -133,9 +181,9 @@ export function isInDevelopment(recipeId) {
   return variantsOf(recipeId).some(v => v.status === 'development');
 }
 
-export function createRecipe({ title = '', chapterId = null } = {}) {
+export function createRecipe({ title = '', chapterId = null, groupId = null } = {}) {
   const t = now();
-  const recipe = { id: uuid(), title, chapterId, tags: [], description: '', defaultVariantId: null, favorite: false, createdAt: t, updatedAt: t };
+  const recipe = { id: uuid(), title, chapterId, groupId, tags: [], description: '', defaultVariantId: null, favorite: false, createdAt: t, updatedAt: t };
   // Nya recept börjar som "under utveckling". Första gången man trycker Klar frågar appen om det ska låsas.
   const variant = { id: uuid(), recipeId: recipe.id, name: 'Standard', status: 'development', currentVersionId: null, sortOrder: 0, createdAt: t, updatedAt: t };
   const version = {

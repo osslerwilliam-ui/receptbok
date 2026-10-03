@@ -2,7 +2,7 @@
 
 import { icon, esc, $, $$, menuSheet, confirmSheet, sheet, snack } from '../ui.js';
 import {
-  bundle, chapterOf, displayTitle, markViewed, updateRecipe, deleteRecipe, restore, NO_CHAPTER, state, onChange,
+  bundle, chapterOf, groupOf, displayTitle, markViewed, updateRecipe, deleteRecipe, restore, NO_CHAPTER, state, onChange,
   versionsOf, testlogsOf, newVersion, lockVariant, unlockVariant, pendingDiscard,
   selectVariant, clearVariantSelection, setFavorite, createVariant, renameVariant, setDefaultVariant, deleteVariant,
 } from '../store.js';
@@ -62,7 +62,7 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
       <article class="recipe${dev ? ' is-dev' : ''}${cook ? ' cook' : ''}">
         <header class="recipe-head">
           <a class="kicker" href="#/kapitel/${ch ? ch.id : NO_CHAPTER}" data-link style="--c: ${colorVar(ch)}">
-            ${ch ? `${esc(ch.emoji || '')} ${esc(ch.name)}` : 'Utan kapitel'}</a>
+            ${ch ? `${esc(ch.emoji || '')} ${esc(ch.name)}${groupOf(recipe) ? ` · ${esc(groupOf(recipe).name)}` : ''}` : 'Utan kapitel'}</a>
           ${dev ? `<span class="badge">${icon('flask-conical')}Under utveckling · v${version.number}</span>` : ''}
           <h1 class="recipe-title">${esc(displayTitle(recipe))}</h1>
           ${b.variants.length > 1 ? `<div class="variant-chips" role="tablist" aria-label="Varianter">${b.variants.map(v => `
@@ -267,10 +267,15 @@ async function openMenu(id, t) {
     const v = unlockVariant(b.variant.id);
     snack(`Upplåst – du utvecklar vidare på version ${v.number}`);
   } else if (choice === 'move') {
-    const target = await pickChapterSheet({ title: 'Flytta till kapitel', current: r.chapterId && state.chapters.has(r.chapterId) ? r.chapterId : NO_CHAPTER });
+    const hasCh = r.chapterId && state.chapters.has(r.chapterId);
+    const g = groupOf(r);
+    const target = await pickChapterSheet({ title: 'Flytta till kapitel', withGroups: true, current: !hasCh ? NO_CHAPTER : g ? `${r.chapterId}|${g.id}` : r.chapterId });
     if (!target) return;
-    updateRecipe(id, { chapterId: target === NO_CHAPTER ? null : target });
-    snack(`Flyttat till ”${target === NO_CHAPTER ? 'Utan kapitel' : state.chapters.get(target).name}”`);
+    const [chId, gId = null] = target === NO_CHAPTER ? [null] : target.split('|');
+    updateRecipe(id, { chapterId: chId, groupId: gId });
+    const ch = chId && state.chapters.get(chId);
+    const grp = gId && ch.groups.find(x => x.id === gId);
+    snack(`Flyttat till ”${!ch ? 'Utan kapitel' : grp ? `${ch.name} – ${grp.name}` : ch.name}”`);
   } else if (choice === 'delete') {
     if (!await confirmSheet({ title: `Ta bort ”${displayTitle(r)}”?`, text: 'Alla versioner och testloggar tas också bort.', ok: 'Ta bort', danger: true })) return;
     const removed = deleteRecipe(id);

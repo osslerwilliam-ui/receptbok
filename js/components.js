@@ -85,16 +85,22 @@ export function chapterSheet(ch = null) {
   });
 }
 
-/** Låter användaren välja kapitel. Returnerar kapitel-id, NO_CHAPTER eller null (avbrutet). */
-export function pickChapterSheet({ title = 'Välj kapitel', exclude = null, current = null } = {}) {
+/**
+ * Låter användaren välja kapitel. Returnerar kapitel-id, NO_CHAPTER eller null (avbrutet).
+ * Med withGroups visas även kapitlens grupper; en grupp returneras som "kapitel-id|grupp-id".
+ */
+export function pickChapterSheet({ title = 'Välj kapitel', exclude = null, current = null, withGroups = false } = {}) {
   const chapters = chaptersSorted().filter(c => c.id !== exclude);
-  const items = [...chapters.map(c => ({ id: c.id, label: c.name, emoji: c.emoji, c: colorVar(c) })),
+  const items = [...chapters.flatMap(c => [
+    { id: c.id, label: c.name, emoji: c.emoji, c: colorVar(c) },
+    ...(withGroups ? (c.groups || []).map(g => ({ id: `${c.id}|${g.id}`, label: g.name, sub: true, c: colorVar(c) })) : []),
+  ]),
     { id: NO_CHAPTER, label: 'Utan kapitel', emoji: '📄', c: 'var(--ch-lera)' }].filter(i => i.id !== exclude);
   return sheet({
     title,
     body: `<div class="menu-list">${items.map(i => `
-      <button type="button" class="menu-item${i.id === current ? ' current' : ''}" data-id="${i.id}" style="--c: ${i.c}">
-        <span class="menu-emoji">${esc(i.emoji || '•')}</span><span>${esc(i.label)}</span>${i.id === current ? icon('check') : ''}</button>`).join('')}</div>`,
+      <button type="button" class="menu-item${i.id === current ? ' current' : ''}${i.sub ? ' menu-sub' : ''}" data-id="${i.id}" style="--c: ${i.c}">
+        ${i.sub ? icon('chevron-right') : `<span class="menu-emoji">${esc(i.emoji || '•')}</span>`}<span>${esc(i.label)}</span>${i.id === current ? icon('check') : ''}</button>`).join('')}</div>`,
     actions: [{ label: 'Avbryt', value: null }],
     onOpen(el, close) {
       el.querySelectorAll('[data-id]').forEach(b => { b.onclick = () => close(b.dataset.id); });

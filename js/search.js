@@ -1,10 +1,10 @@
 // Sökning i minnet. Indexet byggs om när datan ändras (snabbt även med tusentals recept).
 //
-// Söker i titel, ingredienser, taggar och kapitel. Skiftlägesokänsligt, delsträngar
+// Söker i titel, ingredienser, taggar, grupper och kapitel. Skiftlägesokänsligt, delsträngar
 // och enkel stavfelstolerans (ett tecken fel) för ord med minst fyra bokstäver.
 // å, ä och ö är egna bokstäver: "a" hittar alltså inte "å".
 
-import { state, rev, displayTitle, chapterOf, bundle } from './store.js';
+import { state, rev, displayTitle, chapterOf, groupOf, bundle } from './store.js';
 
 export const norm = s => (s || '').toLocaleLowerCase('sv').normalize('NFC');
 const words = s => s.split(/[^\p{L}\p{N}]+/u).filter(Boolean);
@@ -34,6 +34,8 @@ function build() {
       const n = norm(tag);
       if (n) fields.push({ kind: 'tagg', text: tag, n, w: words(n), base: 42 });
     }
+    const grp = groupOf(recipe);
+    if (grp) { const n = norm(grp.name); fields.push({ kind: 'grupp', text: grp.name, n, w: words(n), base: 32 }); }
     if (ch) { const n = norm(ch.name); fields.push({ kind: 'kapitel', text: ch.name, n, w: words(n), base: 30 }); }
     const tn = norm(title);
     index.push({ id: recipe.id, title, tn, tw: words(tn), fields, chapter: ch });
