@@ -12,7 +12,8 @@
   try {
     var t = localStorage.getItem('receptbok-tema');
     var p = localStorage.getItem('receptbok-palett');
-    var bg = {"terrakotta": ["#f5efe4", "#1c1714"], "olivlund": ["#f1efe6", "#191b15"], "ockra": ["#f4eedf", "#16181f"], "rost": ["#eff0ec", "#181a1d"], "plommon": ["#f3ede4", "#1c1619"], "serios": ["#ffffff", "#0f0f0f"]};
+    var bg = {"terrakotta": ["#f5efe4", "#1c1714"], "herbarium": ["#f1efe6", "#191b15"], "serios": ["#ffffff", "#0f0f0f"]};
+    if (p === 'olivlund') p = 'herbarium';
     if (!bg[p]) p = 'terrakotta';
     if (p !== 'terrakotta') document.documentElement.dataset.palette = p;
     if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
