@@ -5,6 +5,7 @@ import { state, meta } from '../store.js';
 import { exportBackup, parseBackup, importBackup, buildBackup, downloadJSON, photosSize } from '../backup.js';
 import { fmtDate, isoDay } from '../format.js';
 import { back } from '../router.js';
+import { pdfFlow } from '../pdf.js';
 import { getTheme, setTheme, getPalette, setPalette, PALETTES } from '../theme.js';
 
 export function render(root) {
@@ -41,6 +42,14 @@ export function render(root) {
           <button type="button" class="btn btn-quiet" data-action="import">${icon('upload')}Importera backup</button>
         </div>
         <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </section>
+
+      <section class="card">
+        <h2 class="card-title">${icon('file-text')}Recept som PDF</h2>
+        <p>Välj ett eller flera recept och spara dem som en PDF-fil, med titel, ingredienser och instruktioner.</p>
+        <div class="btn-col">
+          <button type="button" class="btn btn-quiet" data-action="pdf">${icon('file-text')}Spara recept som PDF</button>
+        </div>
       </section>
 
       <section class="card">
@@ -124,6 +133,7 @@ export function render(root) {
     if (!btn) return;
     const a = btn.dataset.action;
     if (a === 'back') back();
+    else if (a === 'pdf') pdfFlow();
     else if (a === 'export') {
       const { count, bytes } = await photosSize();
       let photos = false;

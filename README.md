@@ -60,6 +60,7 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
 - **Lägg i inköpslista:** **⋮** → *Lägg i inköpslista*. Bocka ur det du redan har hemma och välj *Ny lista* (får receptets namn) eller en befintlig lista – då hamnar varorna sist i listan under receptets namn. Är receptet skalat följer mängderna med, och samma vara på flera ställen (t.ex. smör i deg och fyllning) blir en rad.
+- **Spara som PDF:** kugghjulet → *Spara recept som PDF*. Bocka i de recept du vill ha (bocken vid ett kapitel väljer alla dess recept) och tryck *Skapa PDF*. Chromes utskrift öppnas – välj **Spara som PDF** som skrivare och tryck på PDF-knappen. Filen hamnar i *Hämtade filer*. Ett enskilt recept sparar du via **⋮** → *Spara som PDF* i receptet. PDF:en innehåller titel, ingredienser och instruktioner, ett recept per sida.
 - **Utseende:** kugghjulet → *Utseende*. Välj ljust, mörkt eller som telefonen, och ett av tre teman: Terrakotta (varm kokbok), Herbarium (salvia och oliv, elegant och mjukt) eller Seriös (svartvitt och stramt).
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
