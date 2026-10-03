@@ -24,7 +24,7 @@ export function chapterCard(ch) {
   const n = recipesInChapter(ch.id).length;
   return `<a class="chapter" ${link('/kapitel/' + ch.id)} data-chapter="${ch.id}" data-id="${ch.id}" style="--c: ${colorVar(ch)}">
     <span class="emoji" aria-hidden="true">${esc(ch.emoji || '')}</span>
-    <span><span class="name">${esc(ch.name)}</span><span class="count">${n} ${n === 1 ? 'recept' : 'recept'}</span></span>
+    <span class="name">${esc(ch.name)}</span><span class="count">${n} recept</span>
   </a>`;
 }
 
@@ -33,8 +33,28 @@ export function noChapterCard() {
   if (!n) return '';
   return `<a class="chapter" ${link('/kapitel/' + NO_CHAPTER)} style="--c: var(--ch-lera)">
     <span class="emoji" aria-hidden="true">📄</span>
-    <span><span class="name">Utan kapitel</span><span class="count">${n} recept</span></span>
+    <span class="name">Utan kapitel</span><span class="count">${n} recept</span>
   </a>`;
+}
+
+/**
+ * Långa ord i kapitelnamn delas inte mitt i ("Fermen-tering"): texten krymps i stället
+ * tills det längsta ordet får plats (högst till 70 %). Korta namn behåller sin storlek.
+ */
+export function fitChapterNames(root) {
+  const run = () => {
+    for (const el of root.querySelectorAll('.chapter .name')) {
+      el.style.fontSize = '';
+      const base = parseFloat(getComputedStyle(el).fontSize);
+      let size = base;
+      while (el.scrollWidth > el.clientWidth + 1 && size > base * 0.7) {
+        size *= 0.95;
+        el.style.fontSize = `${size}px`;
+      }
+    }
+  };
+  run();
+  document.fonts?.ready.then(() => { if (root.isConnected) run(); });
 }
 
 /** Dialog för att skapa eller ändra ett kapitel. Returnerar { name, emoji, color } eller null. */

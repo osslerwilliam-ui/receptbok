@@ -4,7 +4,7 @@ import { icon, esc, $, sheet } from '../ui.js';
 import { state, meta, testlogsOf, variantsOf, displayTitle, chaptersSorted, createChapter, createRecipe, reorderChapters, favoritesSorted, reorderFavorites, isInDevelopment, chapterOf, NO_CHAPTER } from '../store.js';
 import { search } from '../search.js';
 import { fmtRelative, fmtDate } from '../format.js';
-import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar } from '../components.js';
+import { recipeRow, chapterCard, noChapterCard, chapterSheet, pickChapterSheet, emptyState, colorVar, fitChapterNames } from '../components.js';
 import { enableGridSort } from '../gridsort.js';
 import { navigate } from '../router.js';
 
@@ -154,6 +154,7 @@ function renderBrowse(el) {
     </details>`;
   }
   el.innerHTML = html;
+  fitChapterNames(el);
   el.querySelector('.recent')?.addEventListener('toggle', e => { recentOpen = e.target.open; });
 }
 
