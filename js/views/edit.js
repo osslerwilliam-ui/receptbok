@@ -49,6 +49,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
   const prevVersion = !fix && version.basedOnVersionId ? state.versions.get(version.basedOnVersionId) : null;
   const prevLogs = prevVersion ? testlogsOf(prevVersion.id) : [];
 
+  const plain = document.documentElement.dataset.palette === 'serios'; // Seriös: inga ikoner
   const form = {
     title: recipe.title || '',
     chapterId: recipe.chapterId && state.chapters.has(recipe.chapterId) ? recipe.chapterId : '',
@@ -84,7 +85,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
       <div class="field-row">
         <label class="field"><span class="field-label">Kapitel</span>
           <select id="f-chapter" class="input" data-f="chapterId">
-            ${chaptersSorted().map(c => `<option value="${c.id}" ${c.id === form.chapterId ? 'selected' : ''}>${esc((c.emoji ? c.emoji + ' ' : '') + c.name)}</option>`).join('')}
+            ${chaptersSorted().map(c => `<option value="${c.id}" ${c.id === form.chapterId ? 'selected' : ''}>${esc((c.emoji && !plain ? c.emoji + ' ' : '') + c.name)}</option>`).join('')}
             <option value="" ${!form.chapterId ? 'selected' : ''}>Utan kapitel</option>
           </select></label>
         <label class="field"><span class="field-label">Ger</span>
