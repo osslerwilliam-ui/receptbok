@@ -3,6 +3,8 @@
 
 @font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
 @font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-600-italic.woff2") format("woff2"); font-weight: 600; font-style: italic; font-display: swap; }
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-700-normal.woff2") format("woff2"); font-weight: 700; font-display: swap; }
+@font-face { font-family: "Cormorant"; src: url("../fonts/cormorant-garamond-latin-700-italic.woff2") format("woff2"); font-weight: 700; font-style: italic; font-display: swap; }
 @font-face { font-family: "Nunito"; src: url("../fonts/nunito-latin-wght-normal.woff2") format("woff2"); font-weight: 200 1000; font-display: swap; }
 @font-face { font-family: "Plex Serif"; src: url("../fonts/ibm-plex-serif-latin-400-normal.woff2") format("woff2"); font-weight: 400; font-display: swap; }
 @font-face { font-family: "Plex Serif"; src: url("../fonts/ibm-plex-serif-latin-600-normal.woff2") format("woff2"); font-weight: 600; font-display: swap; }
@@ -228,6 +230,9 @@
 [data-palette="herbarium"] .list-title { font-size: 1.3rem; }
 [data-palette="herbarium"] :is(.list-sub, .shop-sub) { font-size: 1.1rem; }
 [data-palette="herbarium"] .card-title, [data-palette="herbarium"] .sheet-title { font-size: 1.6rem; }
+/* Cormorant har tunna linjer: rubriker och receptnamn i fetaste vikten så de blir lika tydliga som i Terrakotta. */
+[data-palette="herbarium"] :is(.wordmark, .page-title, .recipe-title, .shop-title, .chapter .name, .rrow .t, .shelf-title, .devrow-title,
+  .list-title, .archive-title, .sheet-title, .card-title, .ed-heading, .ro-heading, .section-title, .group-name, .shop-group, .seg button, .theme-name) { font-weight: 700; }
 
 /* ---------- Seriös: typsnitt, raka hörn, linjer i stället för färgytor ---------- */
 :root[data-palette="serios"] {

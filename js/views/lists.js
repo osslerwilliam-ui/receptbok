@@ -72,6 +72,14 @@ export function listSheet(cur = null) {
 
 /* ---------- Översikt ---------- */
 
+/** Början av listan i liten text (som i Google Keep): de första varorna som är kvar. */
+const PEEK = 4;
+function peek(l) {
+  const left = l.items.filter(i => !i.checked);
+  if (!left.length) return '';
+  return `<span class="list-peek">${left.slice(0, PEEK).map(i => `<span>${esc(i.text)}</span>`).join('')}${left.length > PEEK ? '<span>…</span>' : ''}</span>`;
+}
+
 function listCard(l) {
   const left = remaining(l);
   const total = l.items.length;
@@ -79,8 +87,9 @@ function listCard(l) {
   return `<a class="list-card${l.pinned ? ' pinned' : ''}" href="#/lista/${l.id}" data-link data-list="${l.id}" data-id="${l.id}">
     <span class="list-title">${esc(l.title || 'Namnlös lista')}</span>
     ${l.subtitle ? `<span class="list-sub">${esc(l.subtitle)}</span>` : ''}
+    ${peek(l)}
     <span class="list-progress"><span style="width:${Math.round(done * 100)}%"></span></span>
-    <span class="list-count">${l.pinned ? icon('pin', 'pin-icon') : ''}${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
+    <span class="list-count">${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
   </a>`;
 }
 

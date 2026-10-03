@@ -58,7 +58,7 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 - **Skala:** tryck *Skala* under receptets titel för att tillfälligt ändra mängderna (½×, 1½×, 2× …, eget tal eller antal portioner). Gäller även kokläget och delning, och nollställs när du lämnar receptet.
 - **Kokläge:** större text och skärmen hålls tänd. Lämna läget med krysset eller bakåtknappen.
 - **Dela:** dela-ikonen uppe till höger i receptet skickar det som text via Androids delningsmeny.
-- **Lägg i inköpslista:** knappen under ingredienserna (eller **⋮** → *Lägg i inköpslista*). Bocka ur det du redan har hemma och välj *Ny lista* (får receptets namn) eller en befintlig lista – då hamnar varorna sist i listan under receptets namn. Är receptet skalat följer mängderna med, och samma vara på flera ställen (t.ex. smör i deg och fyllning) blir en rad.
+- **Lägg i inköpslista:** **⋮** → *Lägg i inköpslista*. Bocka ur det du redan har hemma och välj *Ny lista* (får receptets namn) eller en befintlig lista – då hamnar varorna sist i listan under receptets namn. Är receptet skalat följer mängderna med, och samma vara på flera ställen (t.ex. smör i deg och fyllning) blir en rad.
 - **Utseende:** kugghjulet → *Utseende*. Välj ljust, mörkt eller som telefonen, och ett av tre teman: Terrakotta (varm kokbok), Herbarium (salvia och oliv, elegant och mjukt) eller Seriös (svartvitt och stramt).
 - **Ta bort:** via **⋮** i receptet. Du kan ångra direkt i rutan som visas längst ner.
 
@@ -116,4 +116,4 @@ Ett recept är antingen **under utveckling** (gulaktig anteckningsblockston, mä
 | `js/db.js`, `js/store.js`, `js/migrate.js` | Lagring (IndexedDB) och datamodell |
 | `js/search.js` | Sökning |
 | `js/views/` | Skärmarna: start, kapitel, recept/kokläge, redigera, inställningar |
-| `fonts/`, `icons/` | Typsnitt (Fraunces, Inter – OFL) och ikoner (Lucide – ISC) |
+| `fonts/`, `icons/` | Typsnitt (Fraunces, Inter, Cormorant Garamond, Nunito, IBM Plex – OFL) och ikoner (Lucide – ISC) |

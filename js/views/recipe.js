@@ -94,7 +94,6 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
         </div>
         <div class="panel" id="panel-ing" role="tabpanel" aria-labelledby="tab-ing" data-panel="ing" ${t.tab === 'ing' ? '' : 'hidden'}>
           ${ingredientsHtml(ingredients, { done: t.ing, scale: t.scale })}
-          ${!cook && ingredients.length ? `<button type="button" class="btn btn-quiet to-list" data-action="to-list">${icon('list-plus')}Lägg i inköpslista</button>` : ''}
         </div>
         <div class="panel" id="panel-steps" role="tabpanel" aria-labelledby="tab-steps" data-panel="steps" ${t.tab === 'steps' ? '' : 'hidden'}>
           ${stepsHtml(steps, { done: t.steps })}
@@ -171,7 +170,6 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
     }
     else if (a === 'scale') { const f = await scaleSheet(b.version, t.scale); if (f) { t.scale = f; draw(); } }
     else if (a === 'menu') openMenu(id, t);
-    else if (a === 'to-list') addToListFlow(b, { scale: t.scale });
     else if (a === 'edit') editFlow(id);
     else if (a === 'log') testLogSheet(b.version.id);
     else if (a === 'new-version') newVersionFlow(id);
