@@ -391,7 +391,13 @@ export function deleteVariant(variantId) {
 
 export function listsActive() {
   return [...state.lists.values()].filter(l => !l.archived)
-    .sort((a, b) => (b.pinned - a.pinned) || (b.createdAt || '').localeCompare(a.createdAt || ''));
+    .sort((a, b) => (b.pinned - a.pinned) || ((a.sortOrder ?? 0) - (b.sortOrder ?? 0)) || (b.createdAt || '').localeCompare(a.createdAt || ''));
+}
+
+/** Sparar en ny ordning för listor (id:n i önskad ordning). */
+export function reorderLists(ids) {
+  const t = now();
+  commit(ids.map((id, i) => ({ store: 'lists', put: { ...state.lists.get(id), sortOrder: i, updatedAt: t } })));
 }
 
 export function listsArchived() {
@@ -401,7 +407,9 @@ export function listsArchived() {
 
 export function createList({ title = '', subtitle = '', pinned = false, items = [] } = {}) {
   const t = now();
-  const list = { id: uuid(), title: title.trim(), subtitle: subtitle.trim(), pinned, archived: false, archivedAt: null, items, createdAt: t, updatedAt: t };
+  // Nya listor hamnar först.
+  const sortOrder = Math.min(0, ...[...state.lists.values()].map(l => l.sortOrder ?? 0)) - 1;
+  const list = { id: uuid(), title: title.trim(), subtitle: subtitle.trim(), pinned, archived: false, archivedAt: null, items, sortOrder, createdAt: t, updatedAt: t };
   commit([{ store: 'lists', put: list }]);
   return list;
 }
@@ -444,4 +452,22 @@ export function archiveList(id) {
     { store: 'lists', put: { ...l, items: kept, updatedAt: t } },
   ]);
   return { archivedId: copy.id, keptCount: kept.length, undo: () => commit([{ store: 'lists', del: copy.id }, { store: 'lists', put: l }]) };
+}
+
+/* ---------- Favoriter ---------- */
+
+export function favoritesSorted() {
+  return [...state.recipes.values()].filter(r => r.favorite)
+    .sort((a, b) => ((a.favOrder ?? 1e9) - (b.favOrder ?? 1e9)) || displayTitle(a).localeCompare(displayTitle(b), 'sv'));
+}
+
+/** Slår av/på favorit. Nya favoriter hamnar sist. */
+export function setFavorite(id, on) {
+  const max = Math.max(-1, ...favoritesSorted().map(r => r.favOrder ?? 0));
+  return updateRecipe(id, on ? { favorite: true, favOrder: max + 1 } : { favorite: false });
+}
+
+export function reorderFavorites(ids) {
+  const t = now();
+  commit(ids.map((id, i) => ({ store: 'recipes', put: { ...state.recipes.get(id), favOrder: i, updatedAt: t } })));
 }

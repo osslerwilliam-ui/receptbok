@@ -1,6 +1,6 @@
 // Service worker: gör att appen fungerar offline.
 // HÖJ VERSIONEN vid varje release, annars når uppdateringen inte telefonen.
-const VERSION = '1.7.0';
+const VERSION = '1.8.0';
 const CACHE = `receptbok-v${VERSION}`;
 
 const FILES = [
@@ -17,6 +17,7 @@ const FILES = [
   'js/diff.js',
   'js/format.js',
   'js/icons.js',
+  'js/longpress.js',
   'js/migrate.js',
   'js/photos.js',
   'js/recipe-parts.js',

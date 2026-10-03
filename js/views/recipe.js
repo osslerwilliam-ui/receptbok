@@ -4,7 +4,7 @@ import { icon, esc, $, $$, menuSheet, confirmSheet, sheet, snack } from '../ui.j
 import {
   bundle, chapterOf, displayTitle, markViewed, updateRecipe, deleteRecipe, restore, NO_CHAPTER, state, onChange,
   versionsOf, testlogsOf, newVersion, lockVariant, unlockVariant, pendingDiscard,
-  selectVariant, clearVariantSelection, createVariant, renameVariant, setDefaultVariant, deleteVariant,
+  selectVariant, clearVariantSelection, setFavorite, createVariant, renameVariant, setDefaultVariant, deleteVariant,
 } from '../store.js';
 import { fmtDate, fmtFactor, scaleServings, servingsNumber, fmtAmount, parseAmount } from '../format.js';
 import { hydrate, wirePhotoClicks } from '../photos.js';
@@ -164,7 +164,7 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
     else if (a === 'share') shareRecipe(b, { scale: t.scale });
     else if (a === 'favorite') {
       const fav = !b.recipe.favorite;
-      updateRecipe(id, { favorite: fav });
+      setFavorite(id, fav);
       snack(fav ? 'Tillagd i favoriter' : 'Borttagen från favoriter');
     }
     else if (a === 'scale') { const f = await scaleSheet(b.version, t.scale); if (f) { t.scale = f; draw(); } }

@@ -9,7 +9,7 @@ const EDGE = 80;          // nära skärmkanten: scrolla sidan automatiskt
  * listEl: elementet med raderna. rowSel: väljare för rader. handleSel: väljare för handtaget.
  * onMove(from, to): anropas när en rad har flyttats från index `from` till `to`.
  */
-export function enableDragSort(listEl, { rowSel, handleSel, onMove }) {
+export function enableDragSort(listEl, { rowSel, handleSel, onMove, holdMs = HOLD_MS }) {
   let timer = 0;
   let drag = null;
   let start = null;
@@ -20,7 +20,7 @@ export function enableDragSort(listEl, { rowSel, handleSel, onMove }) {
     if (!handle || (e.pointerType === 'mouse' && e.button !== 0)) return;
     const row = handle.closest(rowSel);
     start = { x: e.clientX, y: e.clientY, row, handle, id: e.pointerId };
-    timer = setTimeout(() => begin(e.clientY), HOLD_MS);
+    timer = setTimeout(() => begin(e.clientY), holdMs);
   });
 
   listEl.addEventListener('contextmenu', e => { if (e.target.closest(handleSel)) e.preventDefault(); });

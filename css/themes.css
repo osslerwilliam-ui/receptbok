@@ -182,7 +182,7 @@
   --fs-2xl: clamp(1.9rem, 1.4rem + 2.6vw, 2.35rem);
 }
 [data-palette="herbarium"] .wordmark { font-size: 2.15rem; }
-[data-palette="herbarium"] .wordmark em { margin-left: -.1em; }
+[data-palette="herbarium"] .wordmark em { margin-left: .04em; }
 [data-palette="herbarium"] .section-title {
   font: 600 italic 1.2rem/1.2 var(--font-serif); text-transform: none; letter-spacing: 0; color: var(--title);
   display: flex; align-items: center; gap: 8px;
@@ -204,6 +204,9 @@
 [data-palette="herbarium"] .chapter.add { box-shadow: none; }
 [data-palette="herbarium"] :is(.rrow .t, .devrow-title) { font-size: 1.15rem; }
 [data-palette="herbarium"] .shelf-card { background: var(--accent-soft); box-shadow: none; border-top: 0; border-radius: 18px 18px 18px 4px; }
+/* Inköpslistan: kraftigare text så den syns tydligt i affären */
+[data-palette="herbarium"] .shop-text { font-weight: 600; color: var(--text); }
+[data-palette="herbarium"] .shop-item.done .shop-text { font-weight: 500; }
 [data-palette="herbarium"] .shelf-title { font-size: 1.2rem; line-height: 1.05; }
 [data-palette="herbarium"] .devlist { box-shadow: none; }
 [data-palette="herbarium"] .devrow + .devrow { border-top-style: dashed; }
@@ -272,3 +275,9 @@
 [data-palette="serios"] :is(.list-card, .shelf-card) { box-shadow: none; border: 1px solid var(--line); }
 [data-palette="serios"] .list-card.pinned, [data-palette="serios"] .shelf-card { border-top: 2px solid var(--text); }
 [data-palette="serios"] :is(.list-count, .archive-date, .devrow-meta, .shop-count) { font-family: var(--font-mono); }
+
+/* Seriös: startsidorna helt utan symboler – bara text. */
+[data-palette="serios"] :is(.chapter .emoji, .section-title .inline-icon, .rrow .dot, .rrow .badge .icon, .chapter.add .icon, .list-card .pin-icon, .list-card.add .icon, .text-btn .icon, .notice > .icon, .recent-chev) { display: none; }
+[data-palette="serios"] .chapter { box-shadow: none; }
+[data-palette="serios"] .sort-row { box-shadow: none; border: 1px solid var(--line); }
+[data-palette="herbarium"] .li-amt { font-weight: 800; }
