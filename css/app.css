@@ -623,3 +623,29 @@ ol.dlist { counter-reset: d; }
 .qa-btn:active { background: var(--accent-strong); }
 .qa-hint { font-size: var(--fs-xs); color: var(--text-muted); margin: var(--sp-2) 0 0; }
 .ed-li { display: grid; grid-template-columns: minmax(0, 1fr) auto var(--tap); gap: 6px; align-items: center; }
+
+/* ---------- Kapitelkort som etiketter (alla teman): tunn inre ram, centrerad text ---------- */
+.chapter {
+  justify-items: center; text-align: center; align-content: center; gap: 6px;
+  box-shadow: inset 0 0 0 6px var(--surface), inset 0 0 0 7px var(--line), var(--shadow);
+}
+.chapter::after { display: none; }
+.chapter .count { display: block; margin-top: 4px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-size: .7rem; }
+.chapter.add { box-shadow: none; }
+
+/* ---------- Favoriter: två i bredd ---------- */
+.shelf { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); overflow: visible; margin: var(--sp-2) 0 var(--sp-6); padding: 0; scroll-snap-type: none; }
+.shelf-card { flex: none; min-height: 84px; align-content: space-between; padding: var(--sp-3) var(--sp-4); }
+.shelf-title { font-size: 1.1rem; line-height: 1.15; -webkit-line-clamp: 3; overflow-wrap: normal; }
+
+/* Långtryck för att sortera: ingen textmarkering eller länkmeny */
+:is(.chapter, .shelf-card, .list-card) { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+
+/* ---------- Sorteringsark ---------- */
+.sort-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.sort-row { display: flex; align-items: center; gap: var(--sp-3); min-height: 52px; padding: 0 0 0 var(--sp-3); border-radius: var(--radius-sm); background: var(--bg); box-shadow: inset 0 0 0 1px var(--line); }
+.sort-row.dragging { box-shadow: 0 10px 28px rgb(0 0 0 / .2); background: var(--surface); z-index: 5; position: relative; }
+.sort-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 600 var(--fs-base)/1.2 var(--font-serif); color: var(--title); }
+.sort-sub { font-size: var(--fs-xs); color: var(--text-muted); white-space: nowrap; }
+.sort-grip { width: var(--tap); height: var(--tap); display: grid; place-items: center; color: var(--text-muted); touch-action: none; cursor: grab; flex: none; }
+.sort-row.marked { box-shadow: inset 0 0 0 2px var(--accent); }
