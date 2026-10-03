@@ -12,6 +12,7 @@ import { colorVar, pickChapterSheet, emptyState } from '../components.js';
 import { ingredientsHtml, stepsHtml, testlogsHtml, testLogSheet, stars } from '../recipe-parts.js';
 import { navigate, back } from '../router.js';
 import { shareRecipe } from '../share.js';
+import { addToListFlow } from '../tolist.js';
 import * as wakelock from '../wakelock.js';
 
 // Tillfälligt läge per recept (flik och avbockningar). Sparas inte.
@@ -93,6 +94,7 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
         </div>
         <div class="panel" id="panel-ing" role="tabpanel" aria-labelledby="tab-ing" data-panel="ing" ${t.tab === 'ing' ? '' : 'hidden'}>
           ${ingredientsHtml(ingredients, { done: t.ing, scale: t.scale })}
+          ${!cook && ingredients.length ? `<button type="button" class="btn btn-quiet to-list" data-action="to-list">${icon('list-plus')}Lägg i inköpslista</button>` : ''}
         </div>
         <div class="panel" id="panel-steps" role="tabpanel" aria-labelledby="tab-steps" data-panel="steps" ${t.tab === 'steps' ? '' : 'hidden'}>
           ${stepsHtml(steps, { done: t.steps })}
@@ -168,7 +170,8 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
       snack(fav ? 'Tillagd i favoriter' : 'Borttagen från favoriter');
     }
     else if (a === 'scale') { const f = await scaleSheet(b.version, t.scale); if (f) { t.scale = f; draw(); } }
-    else if (a === 'menu') openMenu(id);
+    else if (a === 'menu') openMenu(id, t);
+    else if (a === 'to-list') addToListFlow(b, { scale: t.scale });
     else if (a === 'edit') editFlow(id);
     else if (a === 'log') testLogSheet(b.version.id);
     else if (a === 'new-version') newVersionFlow(id);
@@ -221,7 +224,7 @@ export async function editFlow(id) {
   }
 }
 
-async function openMenu(id) {
+async function openMenu(id, t) {
   const b = bundle(id);
   const r = b.recipe;
   const dev = b.variant.status === 'development';
@@ -240,6 +243,7 @@ async function openMenu(id) {
     { label: 'Lås upp', value: 'unlock', icon: 'lock-open' },
   ];
   if (nVersions > 1) items.push({ label: `Visa historik (${nVersions} versioner)`, value: 'history', icon: 'clock' });
+  if (b.version.ingredients.length) items.push({ label: 'Lägg i inköpslista', value: 'to-list', icon: 'list-plus' });
   items.push(...variantItems);
   items.push(
     { label: 'Flytta till kapitel', value: 'move', icon: 'folder-input' },
@@ -251,6 +255,7 @@ async function openMenu(id) {
   else if (choice === 'variant-menu') variantMenu(id);
   else if (choice === 'new-version') newVersionFlow(id);
   else if (choice === 'log') testLogSheet(b.version.id);
+  else if (choice === 'to-list') addToListFlow(b, { scale: t.scale });
   else if (choice === 'history') navigate(`/recept/${id}/historik`);
   else if (choice === 'lock') {
     if (!await confirmSheet({

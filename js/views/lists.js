@@ -6,6 +6,7 @@ import { enableGridSort } from '../gridsort.js';
 import { fmtDate, groupItems, parseStepLines, UNITS } from '../format.js';
 import { emptyState } from '../components.js';
 import { navigate, back } from '../router.js';
+import { shareList } from '../share.js';
 import * as wakelock from '../wakelock.js';
 
 let archiveOpen = false;
@@ -156,6 +157,7 @@ function renderList(root, id) {
       <div class="appbar">
         <button type="button" class="icon-btn" data-action="back" aria-label="Tillbaka">${icon('chevron-left')}</button>
         <span class="spacer"></span>
+        ${total ? `<button type="button" class="icon-btn" data-action="share" aria-label="Dela listan">${icon('share-2')}</button>` : ''}
         <button type="button" class="icon-btn" data-action="menu" aria-label="Meny">${icon('ellipsis-vertical')}</button>
       </div>
       <article class="page shop${l.archived ? ' archived' : ''}">
@@ -205,6 +207,7 @@ function renderList(root, id) {
     const l = state.lists.get(id);
     if (a === 'back') back('/listor');
     else if (a === 'menu') listMenu(id);
+    else if (a === 'share') shareList(l);
     else if (a === 'archive') archiveFlow(id);
     else if (a === 'restore') { updateList(id, { archived: false, archivedAt: null }); snack('Listan är återställd'); }
     else if (a === 'copy') {
