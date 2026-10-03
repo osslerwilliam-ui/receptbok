@@ -62,7 +62,7 @@ export function render(root, [id, variantParam], ctx, { cook = false } = {}) {
       <article class="recipe${dev ? ' is-dev' : ''}${cook ? ' cook' : ''}">
         <header class="recipe-head">
           <a class="kicker" href="#/kapitel/${ch ? ch.id : NO_CHAPTER}" data-link style="--c: ${colorVar(ch)}">
-            ${ch ? `${esc(ch.emoji || '')} ${esc(ch.name)}${groupOf(recipe) ? ` · ${esc(groupOf(recipe).name)}` : ''}` : 'Utan kapitel'}</a>
+            ${ch ? `${ch.emoji ? `<span class="kicker-emoji">${esc(ch.emoji)} </span>` : ''}${esc(ch.name)}${groupOf(recipe) ? ` · ${esc(groupOf(recipe).name)}` : ''}` : 'Utan kapitel'}</a>
           ${dev ? `<span class="badge">${icon('flask-conical')}Under utveckling · v${version.number}</span>` : ''}
           <h1 class="recipe-title">${esc(displayTitle(recipe))}</h1>
           ${b.variants.length > 1 ? `<div class="variant-chips" role="tablist" aria-label="Varianter">${b.variants.map(v => `

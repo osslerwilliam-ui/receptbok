@@ -65,7 +65,7 @@ export function chapterSheet(ch = null) {
     body: `
       <label class="field"><span class="field-label">Namn</span>
         <input id="ch-name" class="input" type="text" maxlength="60" value="${esc(cur.name)}" placeholder="t.ex. Bröd" autocomplete="off" enterkeyhint="done"></label>
-      <div class="field"><span class="field-label">Ikon</span>
+      <div class="field emoji-field"><span class="field-label">Ikon</span>
         <div class="emoji-grid" role="radiogroup" aria-label="Ikon">
           <button type="button" class="emoji-opt none" data-emoji="" aria-label="Ingen ikon">–</button>
           ${EMOJIS.map(e => `<button type="button" class="emoji-opt" data-emoji="${e}">${e}</button>`).join('')}
