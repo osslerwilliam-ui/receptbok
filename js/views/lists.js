@@ -75,10 +75,10 @@ function listCard(l) {
   const total = l.items.length;
   const done = total ? (total - left) / total : 0;
   return `<a class="list-card${l.pinned ? ' pinned' : ''}" href="#/lista/${l.id}" data-link>
-    <span class="list-card-head"><span class="list-title">${esc(l.title || 'Namnlös lista')}</span>${l.pinned ? icon('pin', 'pin-icon') : ''}</span>
+    <span class="list-title">${esc(l.title || 'Namnlös lista')}</span>
     ${l.subtitle ? `<span class="list-sub">${esc(l.subtitle)}</span>` : ''}
     <span class="list-progress"><span style="width:${Math.round(done * 100)}%"></span></span>
-    <span class="list-count">${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
+    <span class="list-count">${l.pinned ? icon('pin', 'pin-icon') : ''}${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
   </a>`;
 }
 
@@ -125,7 +125,7 @@ function renderHome(root) {
     if (btn.dataset.action === 'back') back('/');
     else if (btn.dataset.action === 'new-list') {
       const v = await listSheet();
-      if (v) { const l = createList(v); navigate(`/lista/${l.id}`); }
+      if (v) { const l = createList(v); navigate(`/lista/${l.id}/redigera`); } // börja med att lägga in varor
     }
   });
   return off;
@@ -134,7 +134,6 @@ function renderHome(root) {
 /* ---------- Handla-läget ---------- */
 
 function renderList(root, id) {
-  let lastGroup = null; // grupp för snabbinmatningen (sätts med "Grupp:")
   const draw = () => {
     const l = state.lists.get(id);
     if (!l) {
@@ -143,7 +142,6 @@ function renderList(root, id) {
     }
     const left = remaining(l);
     const total = l.items.length;
-    if (lastGroup === null) lastGroup = l.items.length ? (l.items[l.items.length - 1].group || '') : '';
     root.innerHTML = `
       ${l.archived ? '' : `<div class="awake awake-quiet" id="awake">${icon('sun')}<span id="awake-text">Skärmen hålls tänd</span></div>`}
       <div class="appbar">
@@ -162,33 +160,21 @@ function renderList(root, id) {
           ${g.name ? `<h2 class="shop-group">${esc(g.name)}</h2>` : ''}
           <ul class="shop-items">${g.items.map(i => `
             <li class="shop-item${i.checked ? ' done' : ''}" data-id="${i.id}" role="checkbox" aria-checked="${!!i.checked}" tabindex="0">
-              <span class="shop-box" aria-hidden="true">${i.checked ? icon('check') : ''}</span>
               <span class="shop-text">${itemHtml(i.text)}</span>
               ${l.pinned && i.keep ? `<span class="keep-icon" title="Fäst vara">${icon('pin')}</span>` : ''}
-            </li>`).join('')}</ul>`).join('') : `<p class="muted shop-empty">${l.archived ? 'Listan var tom.' : 'Listan är tom. Skriv en vara nedan och tryck Enter.'}</p>`}
+            </li>`).join('')}</ul>`).join('') : `<p class="muted shop-empty">${l.archived ? 'Listan var tom.' : 'Listan är tom. Tryck på Redigera lista för att lägga till varor.'}</p>`}
         ${l.archived ? `
           <div class="shop-actions">
             <button type="button" class="btn btn-primary" data-action="restore">${icon('archive-restore')}Återställ listan</button>
             <button type="button" class="btn btn-quiet" data-action="copy">${icon('copy')}Använd som ny lista</button>
           </div>` : `
           ${total && !left ? `<div class="shop-actions"><button type="button" class="btn btn-primary btn-wide" data-action="archive">${icon('archive')}Arkivera listan</button></div>` : ''}
-          <div class="quick-add">
-            <input id="qa" class="input" type="text" placeholder="${lastGroup ? `Lägg till i ${esc(lastGroup)}…` : 'Lägg till vara…'}" autocomplete="off" enterkeyhint="enter" aria-label="Lägg till vara">
-            <button type="button" class="icon-btn qa-btn" data-action="add" aria-label="Lägg till">${icon('plus')}</button>
-          </div>
-          <p class="qa-hint">Tips: skriv <b>Mejeri:</b> för att börja en grupp. Klistra in flera rader på en gång.</p>`}
+          <div class="shop-actions"><a class="btn btn-quiet btn-wide" href="#/lista/${l.id}/redigera" data-link>${icon('pencil')}Redigera lista</a></div>`}
       </article>`;
   };
 
   draw();
-  const off = onChange(() => {
-    if (!root.isConnected) return;
-    // Behåll fokus i snabbinmatningen när listan ritas om.
-    const hadFocus = document.activeElement?.id === 'qa';
-    const val = $('#qa', root)?.value || '';
-    draw();
-    if (hadFocus) { const q = $('#qa', root); q.value = val; q.focus({ preventScroll: true }); }
-  });
+  const off = onChange(() => { if (root.isConnected) draw(); });
 
   const toggle = li => {
     const l = state.lists.get(id);
@@ -196,35 +182,9 @@ function renderList(root, id) {
     updateList(id, { items: l.items.map(i => i.id === li.dataset.id ? { ...i, checked: !i.checked } : i) });
   };
 
-  const addFromInput = () => {
-    const q = $('#qa', root);
-    const text = q.value.trim();
-    if (!text) return;
-    const l = state.lists.get(id);
-    const { items, group } = parseItems(text, lastGroup);
-    lastGroup = group;
-    q.value = '';
-    if (items.length) {
-      updateList(id, { items: [...l.items, ...items] });
-    } else {
-      draw(); // bara en grupprad: visa den nya gruppen i fältets platshållartext
-      $('#qa', root).focus();
-    }
-    if (items.length > 1) snack(`${items.length} varor tillagda`);
-  };
-
   root.addEventListener('keydown', e => {
-    if (e.target.id === 'qa' && e.key === 'Enter' && !e.isComposing) { e.preventDefault(); addFromInput(); return; }
     const li = e.target.closest?.('.shop-item');
     if (li && (e.key === ' ' || e.key === 'Enter')) { e.preventDefault(); toggle(li); }
-  });
-  root.addEventListener('paste', e => {
-    if (e.target.id !== 'qa') return;
-    const text = e.clipboardData?.getData('text') || '';
-    if (!text.includes('\n')) return;
-    e.preventDefault();
-    $('#qa', root).value = text;
-    addFromInput();
   });
 
   root.addEventListener('click', async e => {
@@ -235,7 +195,6 @@ function renderList(root, id) {
     const a = btn.dataset.action;
     const l = state.lists.get(id);
     if (a === 'back') back('/listor');
-    else if (a === 'add') { addFromInput(); $('#qa', root)?.focus(); }
     else if (a === 'menu') listMenu(id);
     else if (a === 'archive') archiveFlow(id);
     else if (a === 'restore') { updateList(id, { archived: false, archivedAt: null }); snack('Listan är återställd'); }

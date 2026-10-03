@@ -567,14 +567,14 @@ ol.dlist { counter-reset: d; }
 .lists-home { padding-top: 0; }
 .list-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--sp-3); margin: var(--sp-2) 0 var(--sp-6); }
 .list-card {
-  display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; align-content: start; min-height: 116px; padding: var(--sp-4); border: 0; text-align: left;
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 6px; align-content: start; min-height: 116px; padding: var(--sp-4) 14px; border: 0; text-align: left;
   background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); min-width: 0; transition: transform var(--dur);
 }
 .list-card:active { transform: scale(.98); }
 .list-card.pinned { box-shadow: var(--shadow), inset 0 3px 0 var(--accent); }
 .list-card-head { display: flex; justify-content: space-between; gap: 4px; align-items: start; }
-.list-title { font: 600 var(--fs-lg)/1.15 var(--font-serif); color: var(--title); overflow-wrap: break-word; hyphens: auto; min-width: 0; }
-.pin-icon { width: 15px; height: 15px; color: var(--accent); flex: none; margin-top: 3px; }
+.list-title { font: 600 1.08rem/1.15 var(--font-serif); color: var(--title); overflow-wrap: break-word; hyphens: manual; min-width: 0; }
+.pin-icon { width: 13px; height: 13px; color: var(--accent); flex: none; display: inline-block; vertical-align: -2px; margin-right: 4px; }
 .list-sub { font: italic 400 var(--fs-sm)/1.3 var(--font-serif); color: var(--text-muted); }
 .list-progress { display: block; height: 4px; border-radius: 4px; background: var(--surface-2); overflow: hidden; margin-top: auto; }
 .list-progress span { display: block; height: 100%; background: var(--accent); border-radius: inherit; }
@@ -609,8 +609,9 @@ ol.dlist { counter-reset: d; }
 .shop-box .icon { width: 18px; height: 18px; }
 .shop-text { flex: 1; min-width: 0; overflow-wrap: break-word; }
 .li-amt { font-weight: 600; font-variant-numeric: tabular-nums; }
-.shop-item.done { opacity: .3; }
+.shop-item.done { opacity: .2; }
 .shop-item.done .shop-text { text-decoration: line-through; text-decoration-thickness: 1.5px; }
+.shop-item.done .li-amt { font-weight: 400; }
 .shop-item.done .shop-box { background: var(--text-muted); border-color: var(--text-muted); }
 .keep-icon { color: var(--accent); display: inline-flex; flex: none; }
 .keep-icon .icon { width: 15px; height: 15px; }
@@ -622,4 +623,3 @@ ol.dlist { counter-reset: d; }
 .qa-btn:active { background: var(--accent-strong); }
 .qa-hint { font-size: var(--fs-xs); color: var(--text-muted); margin: var(--sp-2) 0 0; }
 .ed-li { display: grid; grid-template-columns: minmax(0, 1fr) auto var(--tap); gap: 6px; align-items: center; }
-.list-card.pinned { grid-column: 1 / -1; min-height: 0; }

@@ -1,6 +1,6 @@
 // Service worker: gör att appen fungerar offline.
 // HÖJ VERSIONEN vid varje release, annars når uppdateringen inte telefonen.
-const VERSION = '1.6.0';
+const VERSION = '1.7.0';
 const CACHE = `receptbok-v${VERSION}`;
 
 const FILES = [
@@ -39,6 +39,9 @@ const FILES = [
   'fonts/fraunces-latin-wght-normal.woff2',
   'fonts/fraunces-latin-wght-italic.woff2',
   'fonts/inter-latin-wght-normal.woff2',
+  'fonts/cormorant-garamond-latin-600-normal.woff2',
+  'fonts/cormorant-garamond-latin-600-italic.woff2',
+  'fonts/nunito-latin-wght-normal.woff2',
   'fonts/ibm-plex-serif-latin-400-normal.woff2',
   'fonts/ibm-plex-serif-latin-600-normal.woff2',
   'fonts/ibm-plex-serif-latin-400-italic.woff2',
