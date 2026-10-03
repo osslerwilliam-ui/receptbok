@@ -47,8 +47,9 @@ Lägg aldrig backupfiler i det här repot – det är publikt. (`*backup*.json` 
 
 ## Så används appen
 
-- **Startsidan:** sök direkt i rutan överst. Sökningen hittar titlar, ingredienser, taggar och kapitel och klarar enkla stavfel. Under rutan finns kapitlen, favoriterna (svep i sidled), recept under utveckling och – hopfällt längst ner – senast visade.
+- **Startsidan:** sök direkt i rutan överst. Sökningen hittar titlar, ingredienser, taggar, grupper och kapitel och klarar enkla stavfel. Under rutan finns kapitlen, favoriterna (svep i sidled), recept under utveckling och – hopfällt längst ner – senast visade.
 - **Kapitel:** skapa med *Nytt kapitel*. Byt namn, ikon och färg eller ta bort via **⋮** inne i kapitlet.
+- **Grupper i kapitel:** inne i ett kapitel, **⋮** → *Ny grupp* (t.ex. *Surdeg* i *Bröd*). Recept utan grupp ligger överst, grupperna under. Tryck på gruppens namn för att fälla ihop eller öppna den – appen kommer ihåg det. Lägg ett recept i en grupp med fältet *Grupp* när du redigerar receptet, via **⋮** → *Flytta till kapitel* i receptet, eller skapa det direkt med **⋮** på gruppen → *Nytt recept i gruppen*. Byt namn eller ta bort gruppen via **⋮** på gruppen (recepten blir kvar i kapitlet). Håll fingret på gruppens namn och dra för att ändra ordning.
 - **Sortera:** håll fingret på ett kapitel, en favorit eller en inköpslista tills rutan lyfts, och dra den direkt till ny plats. De andra rutorna flyttar sig undan. Ordningen sparas när du släpper.
 - **Nytt recept:** gå in i ett kapitel och tryck **Nytt recept**. Allt sparas automatiskt medan du skriver. När du trycker *Klar* första gången frågar appen om receptet är färdigt: **Lås som klart** eller **Fortsätt utveckla**.
 - **Redigera:** överst namn, kapitel och taggar. Därunder växlar du mellan flikarna *Ingredienser* och *Instruktioner*. Håll fingret på **⋮** till höger om en rad och dra för att flytta den, eller tryck kort på **⋮** för att flytta upp/ned eller ta bort.

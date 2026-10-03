@@ -1,7 +1,7 @@
 // Redigera recept: uppgifter, ingredienser och steg. Sparar automatiskt.
 
 import { icon, esc, $, $$, sheet, menuSheet, snack, debounce, autoGrow } from '../ui.js';
-import { state, bundle, chaptersSorted, saveRecipeAndVersion, deleteRecipe, uuid, justCreated, pendingDiscard, isUnchangedCopy, discardVersion, lockVariant, testlogsOf } from '../store.js';
+import { state, bundle, chaptersSorted, groupsOf, groupOf, saveRecipeAndVersion, deleteRecipe, uuid, justCreated, pendingDiscard, isUnchangedCopy, discardVersion, lockVariant, testlogsOf } from '../store.js';
 import { testlogsHtml } from '../recipe-parts.js';
 import { fmtAmount, parseAmount, parseIngredientLine, parseStepLines, UNITS } from '../format.js';
 import { emptyState } from '../components.js';
@@ -52,6 +52,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
   const form = {
     title: recipe.title || '',
     chapterId: recipe.chapterId && state.chapters.has(recipe.chapterId) ? recipe.chapterId : '',
+    groupId: groupOf(recipe)?.id || '',
     servings: version.servings || '',
     description: recipe.description || '',
     tags: (recipe.tags || []).join(', '),
@@ -89,6 +90,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
         <label class="field"><span class="field-label">Ger</span>
           <input id="f-servings" class="input" type="text" placeholder="t.ex. 4 portioner" value="${esc(form.servings)}" data-f="servings" autocomplete="off"></label>
       </div>
+      <div id="group-field"></div>
       <label class="field"><span class="field-label">Beskrivning <span class="opt">(valfritt)</span></span>
         <textarea id="f-desc" class="input" rows="2" placeholder="Några ord om receptet" data-f="description">${esc(form.description)}</textarea></label>
       <label class="field"><span class="field-label">Taggar <span class="opt">(valfritt, skilj med komma)</span></span>
@@ -122,6 +124,19 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
       <datalist id="units">${UNITS.map(u => `<option value="${u}">`).join('')}</datalist>
     </div>`;
 
+  // Grupp: visas bara om kapitlet har grupper.
+  const drawGroupField = () => {
+    const groups = form.chapterId ? groupsOf(form.chapterId) : [];
+    if (!groups.some(g => g.id === form.groupId)) form.groupId = '';
+    $('#group-field', root).innerHTML = groups.length ? `
+      <label class="field"><span class="field-label">Grupp i kapitlet</span>
+        <select id="f-group" class="input" data-f="groupId">
+          <option value="" ${!form.groupId ? 'selected' : ''}>Ingen grupp</option>
+          ${groups.map(g => `<option value="${g.id}" ${g.id === form.groupId ? 'selected' : ''}>${esc(g.name)}</option>`).join('')}
+        </select></label>` : '';
+  };
+  drawGroupField();
+
   const ingList = $('#ing-list', root);
   const stepList = $('#step-list', root);
   const savedEl = $('#saved', root);
@@ -135,7 +150,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
     const ingredients = fromItems(ings, 'ing', i => (i.name.trim() || i.amount != null ? { id: i.id, amount: i.amount, unit: i.unit.trim(), name: i.name.trim(), ...(i.note.trim() ? { note: i.note.trim() } : {}) } : null));
     const stepsOut = fromItems(steps, 'step', s => (s.text.trim() ? { id: s.id, text: s.text.trim() } : null));
     const p = saveRecipeAndVersion(id,
-      { title: form.title.trim(), chapterId: form.chapterId || null, description: form.description.trim(), tags },
+      { title: form.title.trim(), chapterId: form.chapterId || null, groupId: form.groupId || null, description: form.description.trim(), tags },
       version.id,
       { servings: form.servings.trim(), ingredients, steps: stepsOut, ...(prevVersion ? { changeNote: form.changeNote.trim() } : {}) });
     Promise.resolve(p).then(() => { if (!dirty) savedEl.innerHTML = `${icon('check')}Sparat`; });
@@ -218,6 +233,7 @@ export function render(root, [id], _ctx, { fix = false } = {}) {
   });
   root.addEventListener('change', e => {
     if (e.target.dataset.f) { form[e.target.dataset.f] = e.target.value; changed(); }
+    if (e.target.dataset.f === 'chapterId') drawGroupField();
   });
 
   // Enter i en ingrediensrad: ny rad under.

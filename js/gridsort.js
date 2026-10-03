@@ -7,11 +7,12 @@ const EDGE = 70;         // nära skärmkanten: scrolla automatiskt
 
 /**
  * root: vyn (stabil, även om rutnäten ritas om). gridSel: rutnäten. itemSel: rutor som går att flytta.
+ * handleSel (valfritt): man måste hålla i den delen av rutan (t.ex. en rubrik) för att flytta den.
  * onDrop(grid, ids): anropas med rutnätet och rutornas id (data-id) i ny ordning när något har flyttats.
  * Andra element i rutnätet (t.ex. "Nytt kapitel") ligger kvar där de är.
  * Returnerar en funktion som tar bort lyssnarna.
  */
-export function enableGridSort(root, { gridSel, itemSel, onDrop }) {
+export function enableGridSort(root, { gridSel, itemSel, handleSel = null, onDrop }) {
   let timer = 0;
   let start = null;   // { x, y, el, id }
   let drag = null;    // { el, offX, offY, x, y, raf, moved }
@@ -24,6 +25,7 @@ export function enableGridSort(root, { gridSel, itemSel, onDrop }) {
     const el = e.target.closest(itemSel);
     const grid = el?.closest(gridSel);
     if (!el || !grid || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    if (handleSel && !e.target.closest(handleSel)) return;
     container = grid;
     start = { x: e.clientX, y: e.clientY, el, id: e.pointerId };
     timer = setTimeout(() => begin(e.clientX, e.clientY), HOLD_MS);

@@ -52,9 +52,10 @@ Alla objekt har `id` (UUID), `createdAt`, `updatedAt` (ISO-strängar). Databasen
 ```
 Chapter
   id, name, sortOrder
+  groups: [ { id, name, collapsed } ]   // grupper i kapitlet, i visningsordning
 
 Recipe
-  id, title, chapterId, tags[], description?, defaultVariantId, lastViewedAt?
+  id, title, chapterId, groupId?, tags[], description?, defaultVariantId, lastViewedAt?
 
 Variant
   id, recipeId, name            // t.ex. "Standard", "Stor", "Grov"
