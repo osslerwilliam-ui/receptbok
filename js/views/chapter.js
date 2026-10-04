@@ -3,11 +3,12 @@
 
 import { icon, esc, $, sheet, menuSheet, confirmSheet, snack } from '../ui.js';
 import {
-  state, onChange, recipesInChapter, createRecipe, updateChapter, deleteChapter, NO_CHAPTER,
+  state, onChange, recipesInChapter, createRecipe, updateChapter, deleteChapter, NO_CHAPTER, updateRecipe, displayTitle,
   groupsOf, createGroup, updateGroup, reorderGroups, deleteGroup, restore,
 } from '../store.js';
 import { recipeRow, chapterSheet, pickChapterSheet, emptyState, colorVar } from '../components.js';
 import { enableGridSort } from '../gridsort.js';
+import { enableDragToTarget } from '../dragdrop.js';
 import { navigate, back } from '../router.js';
 
 export function render(root, [id]) {
@@ -42,7 +43,9 @@ export function render(root, [id]) {
         </header>
         ${!recipes.length && !groups.length
           ? emptyState({ title: 'Inga recept här än', text: 'Lägg till ditt första recept i kapitlet.', icon: 'book-open' })
-          : `${loose.length ? `<div class="rlist">${loose.map(row).join('')}</div>` : ''}
+          : `${groups.length
+            ? `<div class="loose-zone" data-group=""><p class="drop-label">Utan grupp</p>${loose.length ? `<div class="rlist">${loose.map(row).join('')}</div>` : ''}</div>`
+            : loose.length ? `<div class="rlist">${loose.map(row).join('')}</div>` : ''}
             ${groups.length ? `<div class="cgroups">${groups.map(g => {
               const list = inGroup(g.id);
               return `<section class="cgroup${g.collapsed ? ' collapsed' : ''}" data-id="${g.id}">
@@ -56,7 +59,7 @@ export function render(root, [id]) {
                 </div>
                 ${g.collapsed ? '' : list.length
                   ? `<div class="rlist">${list.map(row).join('')}</div>`
-                  : `<p class="cgroup-empty">Inga recept i gruppen än. Välj gruppen när du redigerar ett recept, eller tryck på ${icon('ellipsis-vertical', 'inline-icon')} → <i>Nytt recept i gruppen</i>.</p>`}
+                  : `<p class="cgroup-empty">Inga recept i gruppen än. Håll fingret på ett recept och dra det hit, eller tryck på ${icon('ellipsis-vertical', 'inline-icon')} → <i>Nytt recept i gruppen</i>.</p>`}
               </section>`;
             }).join('')}</div>` : ''}`}
       </div>
@@ -69,6 +72,22 @@ export function render(root, [id]) {
   const stopSort = isNone ? () => {} : enableGridSort(root, {
     gridSel: '.cgroups', itemSel: '.cgroup', handleSel: '.cgroup-head',
     onDrop(_grid, ids) { reorderGroups(id, ids); },
+  });
+
+  // Håll fingret på ett recept och dra det till en grupp (eller till "Utan grupp").
+  const stopDrop = isNone ? () => {} : enableDragToTarget(root, {
+    itemSel: '.rrow[data-recipe]', targetSel: '.cgroup, .loose-zone',
+    canStart: () => groupsOf(id).length > 0,
+    onDrop(item, target) {
+      const r = state.recipes.get(item.dataset.recipe);
+      const gid = target.classList.contains('cgroup') ? target.dataset.id : null;
+      if (!r || (r.groupId || null) === gid) return;
+      updateRecipe(r.id, { groupId: gid });
+      const g = gid && groupsOf(id).find(x => x.id === gid);
+      snack(g ? `”${displayTitle(r)}” lades i ${g.name}` : `”${displayTitle(r)}” är inte längre i någon grupp`, {
+        action: 'Ångra', onAction: () => updateRecipe(r.id, { groupId: r.groupId || null }),
+      });
+    },
   });
 
   root.addEventListener('click', async e => {
@@ -105,7 +124,7 @@ export function render(root, [id]) {
       }
     }
   });
-  return () => { off(); stopSort(); };
+  return () => { off(); stopSort(); stopDrop(); };
 }
 
 /** Dialog för gruppens namn. Returnerar namnet eller null. */

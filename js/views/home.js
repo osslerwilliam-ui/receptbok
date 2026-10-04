@@ -10,6 +10,10 @@ import { navigate } from '../router.js';
 
 let query = '';
 let recentOpen = false; // "Senast visade" är hopfälld tills man öppnar den
+// "Under utveckling" är öppen tills man fäller ihop den. Valet sparas på telefonen.
+const DEV_KEY = 'receptbok-dev-open';
+const devOpen = () => { try { return localStorage.getItem(DEV_KEY) !== '0'; } catch { return true; } };
+const setDevOpen = on => { try { localStorage.setItem(DEV_KEY, on ? '1' : '0'); } catch { /* ok */ } };
 
 export function render(root, _params, ctx) {
   root.innerHTML = `
@@ -130,7 +134,9 @@ function renderBrowse(el) {
   // Under utveckling: kompakt lista, en rad per variant.
   const dev = recipes.filter(r => isInDevelopment(r.id));
   if (dev.length) {
-    html += `<h2 class="section-title">${icon('flask-conical', 'inline-icon dev-icon')} Under utveckling</h2><div class="devlist">${dev.flatMap(r => {
+    html += `<details class="recent dev-section" ${devOpen() ? 'open' : ''}>
+      <summary class="section-title">${icon('flask-conical', 'inline-icon dev-icon')} Under utveckling · ${dev.length}<span class="recent-chev">${icon('chevron-down')}</span></summary>
+      <div class="devlist">${dev.flatMap(r => {
       const vs = variantsOf(r.id);
       return vs.filter(v => v.status === 'development').map(v => {
         const ver = state.versions.get(v.currentVersionId);
@@ -141,7 +147,8 @@ function renderBrowse(el) {
           <span class="devrow-meta">${ver ? `v${ver.number}` : ''}${last ? ` · ${fmtDate(last.date)}` : ' · ej testad'}</span>
         </a>`;
       });
-    }).join('')}</div>`;
+    }).join('')}</div>
+    </details>`;
   }
 
   // Senast visade: hopfälld längst ner.
@@ -155,7 +162,8 @@ function renderBrowse(el) {
   }
   el.innerHTML = html;
   fitChapterNames(el);
-  el.querySelector('.recent')?.addEventListener('toggle', e => { recentOpen = e.target.open; });
+  el.querySelector('.recent:not(.dev-section)')?.addEventListener('toggle', e => { recentOpen = e.target.open; });
+  el.querySelector('.dev-section')?.addEventListener('toggle', e => setDevOpen(e.target.open));
 }
 
 function backupDue(recipes) {
