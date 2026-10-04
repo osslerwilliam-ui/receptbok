@@ -558,7 +558,7 @@ ol.dlist { counter-reset: d; }
 .recent-chev { margin-left: auto; display: inline-flex; transition: transform var(--dur); }
 .recent-chev .icon { width: 16px; height: 16px; }
 .recent[open] .recent-chev { transform: rotate(180deg); }
-.recent .rlist { margin: var(--sp-2) 0 0; }
+.recent .rlist, .recent .devlist { margin: var(--sp-2) 0 0; }
 .section-title .inline-icon { width: 12px; height: 12px; vertical-align: -1px; }
 
 /* ---------- Inköpslistor ---------- */
@@ -635,7 +635,7 @@ ol.dlist { counter-reset: d; }
 .chapter .count { align-self: end; }
 .chapter::after { display: none; }
 .chapter .count { display: block; margin-top: 4px; text-transform: uppercase; letter-spacing: .08em; font-weight: 700; font-size: .7rem; }
-.chapter.add { box-shadow: none; }
+.chapter.add { box-shadow: none; grid-template-rows: none; align-content: center; }
 
 /* ---------- Favoriter: två i bredd ---------- */
 .shelf { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-3); overflow: visible; margin: var(--sp-2) 0 var(--sp-6); padding: 0; scroll-snap-type: none; }
@@ -692,3 +692,13 @@ ol.dlist { counter-reset: d; }
   #print-root ul, #print-root ol { margin: 0; padding-left: 18pt; }
   #print-root li { margin: 0 0 3pt; break-inside: avoid; }
 }
+
+/* ---------- Dra recept till grupper ---------- */
+.chapter-page .rrow { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.drag-ghost { position: fixed; z-index: 60; pointer-events: none; margin: 0; box-shadow: 0 14px 34px rgb(0 0 0 / .22); opacity: .96; }
+.drag-source { opacity: .35; }
+.drop-label { display: none; margin: 0 0 var(--sp-2); font-size: var(--fs-xs); font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--text-muted); }
+.drag-active .loose-zone { min-height: 64px; border-radius: var(--radius); outline: 1.5px dashed var(--line); outline-offset: 4px; margin-bottom: var(--sp-5); }
+.drag-active .drop-label { display: block; }
+.drag-active .cgroup { outline: 1.5px dashed transparent; outline-offset: 4px; }
+:is(.cgroup, .loose-zone).drop-hover { outline: 2px solid var(--accent) !important; background: var(--accent-soft); }
