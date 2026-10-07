@@ -702,3 +702,17 @@ ol.dlist { counter-reset: d; }
 .drag-active .drop-label { display: block; }
 .drag-active .cgroup { outline: 1.5px dashed transparent; outline-offset: 4px; }
 :is(.cgroup, .loose-zone).drop-hover { outline: 2px solid var(--accent) !important; background: var(--accent-soft); }
+
+/* ---------- Snabbtillägg på inköpslistor ---------- */
+.list-foot { display: flex; align-items: center; justify-content: space-between; gap: 4px; min-height: 28px; }
+.quick-add {
+  position: relative; flex: none; width: 44px; height: 44px; margin: -8px -10px -10px 0; display: grid; place-items: center;
+  border-radius: 50%; color: var(--accent); cursor: pointer;
+}
+.quick-add::before { content: ""; position: absolute; inset: 8px; border-radius: 50%; background: var(--accent-soft); transition: transform var(--dur); }
+.quick-add .icon { position: relative; width: 18px; height: 18px; }
+.quick-add:active::before { transform: scale(.88); }
+.qa-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: var(--sp-2); }
+.qa-added { list-style: none; margin: var(--sp-3) 0 0; padding: 0; display: grid; gap: 4px; font-size: var(--fs-sm); color: var(--text-muted); }
+.qa-added li { display: flex; align-items: center; gap: 6px; }
+.qa-added .icon { width: 14px; height: 14px; color: var(--accent); flex: none; }

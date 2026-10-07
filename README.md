@@ -70,6 +70,7 @@ Tryck på **listikonen** uppe till höger på startsidan (bredvid kugghjulet).
 
 - **Ny lista:** ge den en titel och gärna en undertitel (visas i kursiv). Bocka i *Fäst listan* om den ska ligga överst.
 - **Lägga till varor:** när du skapat listan kommer du direkt till redigeringen. Skriv en vara och tryck Enter för nästa rad. Använd *+ Grupp* för grupper (t.ex. Mejeri) eller *Klistra in* för många rader på en gång. Senare når du redigeringen med knappen **Redigera lista** längst ner i listan.
+- **Snabbtillägg:** tryck på **+** nere till höger på en lista i listöversikten (eller *Lägg till vara* inne i listan). Skriv en vara och tryck Enter – rutan står kvar så att du kan skriva nästa. Tryck *Klar* när du är färdig. Nya varor hamnar sist bland varorna utan grupp.
 - **I affären:** öppna listan och tryck på en vara för att stryka över den – den blir mycket blek så att det som är kvar syns tydligt. Överstrykningarna sparas, även om du lämnar listan. Skärmen hålls tänd.
 - **Dela:** dela-ikonen uppe till höger skickar listan som text (t.ex. i WhatsApp): *Inköpslista – titel* och sedan varorna rad för rad. Varor du redan strukit över skickas inte med.
 - **Redigera** (via **⋮**): ändra titel, varor och grupper, flytta rader genom att hålla och dra i **⋮**.

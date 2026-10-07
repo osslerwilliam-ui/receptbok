@@ -70,6 +70,52 @@ export function listSheet(cur = null) {
   });
 }
 
+/* ---------- Snabbtillägg ---------- */
+
+/**
+ * Lägg till en eller flera varor utan att öppna redigeringen. Varje vara sparas direkt när man trycker
+ * Enter eller Lägg till, och rutan står kvar för nästa vara. Nya varor hamnar sist bland varorna utan grupp.
+ */
+export function quickAddSheet(id) {
+  const l0 = state.lists.get(id);
+  if (!l0) return;
+  const added = [];
+  return sheet({
+    title: `Lägg till i ${l0.title || 'listan'}`,
+    body: `
+      <div class="qa-row">
+        <input id="qa-input" class="input" type="text" placeholder="t.ex. 2 l mjölk" autocomplete="off" enterkeyhint="enter" aria-label="Vara">
+        <button type="button" class="btn btn-primary" id="qa-add">${icon('plus')}Lägg till</button>
+      </div>
+      <ul class="qa-added" id="qa-added" aria-live="polite"></ul>`,
+    actions: [{ label: 'Klar', value: null }],
+    onOpen(el) {
+      const input = el.querySelector('#qa-input');
+      const out = el.querySelector('#qa-added');
+      const add = () => {
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+        const l = state.lists.get(id);
+        if (!l) return;
+        const item = { id: uuid(), text, checked: false };
+        const at = l.items.findIndex(i => i.group);
+        const items = [...l.items];
+        items.splice(at < 0 ? items.length : at, 0, item);
+        updateList(id, { items });
+        added.push(text);
+        out.innerHTML = added.map(t => `<li>${icon('check')}${esc(t)}</li>`).join('');
+        input.value = '';
+        input.focus();
+      };
+      el.querySelector('#qa-add').addEventListener('click', add);
+      input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); add(); } });
+      setTimeout(() => input.focus(), 60);
+    },
+  }).then(() => {
+    if (added.length) snack(`${added.length} ${added.length === 1 ? 'vara' : 'varor'} lades till`);
+  });
+}
+
 /* ---------- Översikt ---------- */
 
 /** Början av listan i liten text (som i Google Keep): de första varorna som är kvar. */
@@ -89,7 +135,10 @@ function listCard(l) {
     ${l.subtitle ? `<span class="list-sub">${esc(l.subtitle)}</span>` : ''}
     ${peek(l)}
     <span class="list-progress"><span style="width:${Math.round(done * 100)}%"></span></span>
-    <span class="list-count">${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
+    <span class="list-foot">
+      <span class="list-count">${!total ? 'Tom lista' : left ? `${left} kvar av ${total}` : 'Allt handlat'}</span>
+      <span class="quick-add" role="button" tabindex="0" data-action="quick-add" data-list-id="${l.id}" aria-label="Lägg till vara i ${esc(l.title || 'listan')}">${icon('plus')}</span>
+    </span>
   </a>`;
 }
 
@@ -138,9 +187,14 @@ function renderHome(root) {
       reorderLists([...ids, ...listsActive().filter(l => !moved.has(l.id)).map(l => l.id)]);
     },
   });
+  root.addEventListener('keydown', e => {
+    const qa = e.target.closest?.('.quick-add');
+    if (qa && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); quickAddSheet(qa.dataset.listId); }
+  });
   root.addEventListener('click', async e => {
     const btn = e.target.closest('[data-action]');
     if (!btn) return;
+    if (btn.dataset.action === 'quick-add') { e.preventDefault(); quickAddSheet(btn.dataset.listId); return; }
     if (btn.dataset.action === 'back') back('/');
     else if (btn.dataset.action === 'new-list') {
       const v = await listSheet();
@@ -189,7 +243,10 @@ function renderList(root, id) {
             <button type="button" class="btn btn-quiet" data-action="copy">${icon('copy')}Använd som ny lista</button>
           </div>` : `
           ${total && !left ? `<div class="shop-actions"><button type="button" class="btn btn-primary btn-wide" data-action="archive">${icon('archive')}Arkivera listan</button></div>` : ''}
-          <div class="shop-actions"><a class="btn btn-quiet btn-wide" href="#/lista/${l.id}/redigera" data-link>${icon('pencil')}Redigera lista</a></div>`}
+          <div class="shop-actions">
+            <button type="button" class="btn btn-quiet" data-action="quick-add">${icon('plus')}Lägg till vara</button>
+            <a class="btn btn-quiet" href="#/lista/${l.id}/redigera" data-link>${icon('pencil')}Redigera lista</a>
+          </div>`}
       </article>`;
   };
 
@@ -217,6 +274,7 @@ function renderList(root, id) {
     if (a === 'back') back('/listor');
     else if (a === 'menu') listMenu(id);
     else if (a === 'share') shareList(l);
+    else if (a === 'quick-add') quickAddSheet(id);
     else if (a === 'archive') archiveFlow(id);
     else if (a === 'restore') { updateList(id, { archived: false, archivedAt: null }); snack('Listan är återställd'); }
     else if (a === 'copy') {
